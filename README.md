@@ -34,13 +34,13 @@ Replicar utilizando HTML y CSS la [siguiente web](https://www.minidamas.com) res
 Clonar el proyecto
 
 ```bash
-  git clone https://github.com/juanzitelli/tp-1_LPPA_mini-damas.git
+  git clone git@github.com:juanzitelli/checkers.git
 ```
 
 Ir a la carpeta del proyecto
 
 ```bash
-  cd tp-1_LPPA_mini-damas
+  cd checkers
 ```
 
 Abrir el archivo principal con tu navegador

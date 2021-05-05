@@ -1,5 +1,5 @@
 
-# Trabajo practico 1 - Mini damas
+# Trabajo practico 1 - ✨*Checkers*✨
 
 ## Contenido de la tarea
 

@@ -27,7 +27,7 @@ Replicar utilizando HTML y CSS la [siguiente web](https://www.minidamas.com) res
 - ¡¡No copiar y pegar ejemplos porque el profesor se da cuenta!!
 ## Licencia
 
-[![MIT Licencia](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSE)
+[![MIT Licencia](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSE.md)
   
 ## Correr el proyecto localmente
 

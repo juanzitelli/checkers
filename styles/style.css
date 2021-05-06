@@ -3,12 +3,21 @@
 
 :root {
   --border-color: #eaeaea;
-  --border-width: 0.0625rem
+  --border-color-dark: #999999;
+  --border-width: 0.0625rem;
+  --button-background: #84c5f3
+  --disabled-color: rgb(204, 204, 204);
+  --border-radius: 0.625rem;
+  --header-background-color: #d4707a;
 }
 
 #body {
   display: grid;
   grid-template-rows: min-content auto min-content;
+}
+
+.uppercase {
+  text-transform: uppercase;
 }
 
 body,
@@ -23,23 +32,24 @@ html {
   box-sizing: border-box;
 }
 
-.header, .footer{
-  height: fit-content;
-}
-
 .header__navigation,
 .footer__navigation {
   display: flex;
   flex-direction: row;
-  padding: 2rem;
+  padding: 1rem;
+}
+
+.list__footer-item__link {
+  color: darkslategray;
+  text-decoration: none;
 }
 
 .header__navigation {
-  border-bottom: var(--border-width) solid var(--border-color);
+  padding-left: 6.5rem;
+  background: var(--header-background-color);
 }
-
-.footer__navigation {
-  border-top: var(--border-width) solid var(--border-color);
+.header__navigation .heading .list__header-item__link {
+  text-decoration: none;
 }
 
 .navigation__list {
@@ -59,35 +69,50 @@ html {
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #DDDDDD;;
 }
 
 .main-content__board {
   display: flex;
   flex-direction: column;
-  border: 0.4rem solid var(--border-color);
-  border-radius: 0.2rem;
+  border: 0.3125rem solid var(--border-color-dark);
 }
 
 .main-content__breadcrumb {
   width: 80vw;
-  padding: 1rem;
+  padding: 0.7rem 1rem;
   border: 1px solid var(--border-color);
   margin: 1rem;
+  background-color: #f5f5f5;
+}
+
+.main-content__button {
+  background-color: lightBlue;
+  border: var(--border-width) solid var(--button-background);
+  color: white;
+  cursor: pointer;
+  font-size: 1.3125rem;
+  margin: 1.25rem;
+  padding: 0.625rem 2.8125rem;
+  text-shadow: 0 0 0.1875rem rgb(51, 51, 51);
+  border-radius: var(--border-radius);
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
 .link {
   font-weight: 500;
+  color: white;
+  text-decoration: none;
 }
 
 .link--disabled {
   color: gray;
   pointer-events: none;
-  text-decoration: none;
 }
 
 .link--disabled::before {
-  padding: 0 5px;
-  color: rgb(204, 204, 204);
+  padding: 0 0.375rem;
+  color: var(--disabled-color);
   content: "/ ";
 }
 
@@ -98,7 +123,7 @@ html {
   align-items: center;
 }
 .board__row .row__item {
-  padding: 1.7rem;
+  padding: 1.9rem;
 }
 
 .board__row:nth-child(even) .row__item:nth-child(odd) {

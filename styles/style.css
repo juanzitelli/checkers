@@ -20,6 +20,10 @@
   text-transform: uppercase;
 }
 
+.heading {
+  font-size: 1.5rem;
+}
+
 body,
 html {
   margin: 0;
@@ -55,8 +59,7 @@ html {
 .navigation__list {
   display: flex;
   flex-direction: row;
-  justify-content: baseline;
-  align-items: center;
+  align-items: baseline;
 }
 
 .navigation__list .list__header-item,
@@ -79,7 +82,7 @@ html {
 }
 
 .main-content__breadcrumb {
-  width: 80vw;
+  width: 60vw;
   padding: 0.7rem 1rem;
   border: 1px solid var(--border-color);
   margin: 1rem;

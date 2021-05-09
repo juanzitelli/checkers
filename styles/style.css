@@ -20,15 +20,16 @@
 
 .heading {
   font-size: 1.5rem;
+  font-weight: 300;
 }
 
 body,
 html {
   margin: 0;
   padding: 0;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-weight: 400;
-  font-size: 16px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 14px;
   height: 100vh;
   box-sizing: border-box;
 }
@@ -37,7 +38,7 @@ html {
 .footer__navigation {
   display: flex;
   flex-direction: row;
-  padding: 1rem;
+  padding: 1.1rem;
 }
 
 .list__footer-item__link {
@@ -79,9 +80,10 @@ html {
 }
 
 .banner {
-  width: 60vw;
+  width: 80vw;
   padding: 0.7rem 1rem;
   border: 1px solid var(--border-color);
+  border-radius: 0.28571429rem;
   margin: 1rem;
   background-color: #f5f5f5;
 }
@@ -102,7 +104,6 @@ html {
 }
 
 .link {
-  font-weight: 500;
   color: white;
   text-decoration: none;
 }
@@ -125,7 +126,7 @@ html {
   align-items: center;
 }
 .board__row .row__item {
-  padding: 1.9rem;
+  padding: 2.1rem;
 }
 
 .board__row:nth-child(even) .row__item:nth-child(odd) {

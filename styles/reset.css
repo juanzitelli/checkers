@@ -22,6 +22,10 @@ section {
   font-size: 100%;
 }
 
+h1 {
+  font-weight: normal;
+}
+
 footer,
 header,
 nav,

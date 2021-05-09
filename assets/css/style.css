@@ -145,3 +145,10 @@ html {
   background-color: black;
 }
 
+.has-red-piece {
+  background-image: url(./../img/red-piece.png);
+}
+
+.has-white-piece {
+  background-image: url(./../img/white-piece.png);
+}

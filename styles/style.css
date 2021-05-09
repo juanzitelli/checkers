@@ -78,7 +78,7 @@ html {
   border: 0.3125rem solid var(--border-color-dark);
 }
 
-.main-content__breadcrumb {
+.banner {
   width: 60vw;
   padding: 0.7rem 1rem;
   border: 1px solid var(--border-color);

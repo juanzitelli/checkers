@@ -144,3 +144,4 @@ html {
 .board__row:nth-child(odd) .row__item:nth-child(even) {
   background-color: black;
 }
+

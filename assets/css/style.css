@@ -2,10 +2,7 @@
 
 :root {
   --border-color: #161b22;
-  --border-color-dark: #999999;
   --border-width: 0.0625rem;
-  --button-background: #84c5f3;
-  --disabled-color: rgb(204, 204, 204);
   --border-radius: 0.625rem;
   --background-color: #0d1117;
   --header-background-color: #161b22;

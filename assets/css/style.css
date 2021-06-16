@@ -144,6 +144,10 @@ html {
   background-color: black;
 }
 
+.has-red-piece, .has-white-piece {
+  background-size: cover;
+}
+
 .has-red-piece {
   background-image: url(./../img/red-piece.png);
 }

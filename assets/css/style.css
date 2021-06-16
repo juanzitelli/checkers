@@ -1,18 +1,22 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap");
 
 :root {
-  --border-color: #eaeaea;
+  --border-color: #161b22;
   --border-color-dark: #999999;
   --border-width: 0.0625rem;
   --button-background: #84c5f3;
   --disabled-color: rgb(204, 204, 204);
   --border-radius: 0.625rem;
-  --header-background-color: #d4707a;
+  --background-color: #0d1117;
+  --header-background-color: #161b22;
+  --font-color: #f0f6fc;
 }
 
 #body {
   display: grid;
   grid-template-rows: min-content auto min-content;
+  background-color: var(--background-color);
+  color: var(--font-color);
 }
 
 .header__navigation,
@@ -23,7 +27,7 @@
 }
 
 .list__footer-item__link {
-  color: darkslategray;
+  color: var(--font-color);
   text-decoration: none;
 }
 
@@ -61,7 +65,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #dddddd;
 }
 
 .main-content__board {

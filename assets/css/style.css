@@ -16,6 +16,9 @@ html {
   padding: 0;
   font-family: Inter, Helvetica, Arial, sans-serif;
   height: 100vh;
+}
+
+* {
   box-sizing: border-box;
 }
 

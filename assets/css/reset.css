@@ -31,6 +31,10 @@ section {
   border: 0;
 }
 
+button {
+  border: none;
+}
+
 footer,
 header,
 nav,

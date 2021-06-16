@@ -27,10 +27,6 @@ html {
   grid-template-rows: min-content auto min-content;
 }
 
-.uppercase {
-  text-transform: uppercase;
-}
-
 .heading {
   font-size: 1.5rem;
   font-weight: 300;

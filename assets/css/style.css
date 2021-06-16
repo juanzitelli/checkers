@@ -47,7 +47,8 @@ html {
 .header__navigation {
   background: var(--header-background-color);
 }
-.header__navigation .heading .list__header-item__link {
+
+.list__header-item__link {
   text-decoration: none;
 }
 
@@ -57,8 +58,8 @@ html {
   align-items: baseline;
 }
 
-.navigation__list .list__header-item,
-.navigation__list .list__footer-item {
+.list__header-item,
+.list__footer-item {
   list-style-type: none;
   padding: 0rem 1rem;
 }

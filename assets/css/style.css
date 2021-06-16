@@ -103,11 +103,6 @@ html {
   text-decoration: none;
 }
 
-.link--disabled {
-  color: gray;
-  pointer-events: none;
-}
-
 .link--disabled::before {
   padding: 0 0.375rem;
   color: var(--disabled-color);

@@ -10,26 +10,9 @@
   --header-background-color: #d4707a;
 }
 
-body,
-html {
-  margin: 0;
-  padding: 0;
-  font-family: Inter, Helvetica, Arial, sans-serif;
-  height: 100vh;
-}
-
-* {
-  box-sizing: border-box;
-}
-
 #body {
   display: grid;
   grid-template-rows: min-content auto min-content;
-}
-
-.heading {
-  font-size: 1.5rem;
-  font-weight: 300;
 }
 
 .header__navigation,
@@ -74,7 +57,6 @@ html {
 .main-content__board {
   display: flex;
   flex-direction: column;
-  border: 0.3125rem solid var(--border-color-dark);
 }
 
 .banner {
@@ -88,14 +70,11 @@ html {
 
 .main-content__button {
   background-color: black;
-  border: var(--border-width) solid var(--button-background);
   color: white;
   cursor: pointer;
-  font-size: 1.3125rem;
   margin: 1.25rem;
-  padding: 0.625rem 2.8125rem;
+  padding: 1rem 3rem;
   border-radius: var(--border-radius);
-  box-shadow: 0 0 0.5rem 0.0625rem #888888;
 }
 
 .link {

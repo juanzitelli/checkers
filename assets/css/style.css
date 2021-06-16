@@ -142,18 +142,12 @@
   padding: var(--spacing--xlg);
 }
 
+.board__row:nth-child(odd) .row__item:nth-child(odd),
 .board__row:nth-child(even) .row__item:nth-child(even) {
   background-color: var(--pure-white);
 }
 
-.board__row:nth-child(odd) .row__item:nth-child(odd) {
-  background-color: var(--pure-white);
-}
-
-.board__row:nth-child(even) .row__item:nth-child(odd) {
-  background-color: var(--pure-black);
-}
-
+.board__row:nth-child(even) .row__item:nth-child(odd),
 .board__row:nth-child(odd) .row__item:nth-child(even) {
   background-color: var(--pure-black);
 }

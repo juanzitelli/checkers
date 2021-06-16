@@ -61,8 +61,8 @@
 }
 
 .main-content__button {
-  background-color: black;
-  color: white;
+  background-color: white;
+  color: black;
   cursor: pointer;
   margin: 1.25rem;
   padding: 1rem 3rem;

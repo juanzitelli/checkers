@@ -104,14 +104,14 @@
   align-items: center;
 }
 
-.main-content__board {
+.game-area__board {
   display: flex;
   flex-direction: column;
   margin-top: var(--spacing--md);
   box-shadow: var(--box-shadow-sm);
 }
 
-.main-content__button {
+.game-area__button {
   background-color: var(--button-background-color--primary);
   color: var(--font-color);
   cursor: pointer;
@@ -124,7 +124,7 @@
   transition: opacity var(--transition-speed-medium);
 }
 
-.main-content__button:hover {
+.game-area__button:hover {
   opacity: var(--opacity-medium);
 }
 

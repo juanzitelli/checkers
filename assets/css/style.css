@@ -151,16 +151,3 @@
 .board__row:nth-child(odd) .row__item:nth-child(even) {
   background-color: var(--pure-black);
 }
-
-.has-red-piece,
-.has-white-piece {
-  background-size: cover;
-}
-
-.has-red-piece {
-  background-image: url(./../img/red-piece.png);
-}
-
-.has-white-piece {
-  background-image: url(./../img/white-piece.png);
-}

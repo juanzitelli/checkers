@@ -155,7 +155,7 @@
   grid-auto-flow: column;
 }
 
-.board__row .row__tile {
+.row__tile {
   display: flex;
   flex-direction: row;
   height: clamp(

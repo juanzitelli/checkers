@@ -144,6 +144,9 @@
 }
 
 .board__row {
+  display: grid;
+  grid-auto-flow: column;
+}
   display: flex;
   flex-direction: row;
   justify-content: center;

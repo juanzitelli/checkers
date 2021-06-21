@@ -115,6 +115,13 @@
   align-items: center;
 }
 
+.main-content__game-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .game-area__board {
   display: flex;
   flex-direction: column;

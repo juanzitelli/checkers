@@ -39,6 +39,59 @@ const getContentFromTemplate = ({ templateId, elementCssClass }) => {
     .querySelector(`.${elementCssClass}`);
 };
 
+const renderRows = (boardElement, initialBoardMatrix) => {
+  const rowElementParams = {
+    templateId: KNOWN_HTML_TEMPLATE_IDS.board.row,
+    elementCssClass: KNOWN_CSS_CLASSES.row,
+  };
+
+  const rowElement = getContentFromTemplate(rowElementParams);
+
+  const tileElementParams = {
+    templateId: KNOWN_HTML_TEMPLATE_IDS.board.tile,
+    elementCssClass: KNOWN_CSS_CLASSES.tile,
+  };
+
+  const tileElement = getContentFromTemplate(tileElementParams);
+
+  const whiteCheckerParams = {
+    templateId: KNOWN_HTML_TEMPLATE_IDS.board.checkers.white,
+    elementCssClass: KNOWN_CSS_CLASSES.whiteChecker,
+  };
+
+  const whiteCheckerElement = getContentFromTemplate(whiteCheckerParams);
+
+  const redCheckerParams = {
+    templateId: KNOWN_HTML_TEMPLATE_IDS.board.checkers.red,
+    elementCssClass: KNOWN_CSS_CLASSES.redChecker,
+  };
+
+  const redCheckerElement = getContentFromTemplate(redCheckerParams);
+
+  initialBoardMatrix.forEach((row) => {
+    const clonedRow = rowElement.cloneNode(true);
+    row.forEach((cell) => {
+      const clonedTile = tileElement.cloneNode(true);
+      switch (cell) {
+        case 1:
+          const clonedWhiteChecker = whiteCheckerElement.cloneNode(true);
+          clonedTile.appendChild(clonedWhiteChecker);
+          clonedRow.appendChild(clonedTile);
+          break;
+        case 2:
+          const clonedRedChecker = redCheckerElement.cloneNode(true);
+          clonedTile.appendChild(clonedRedChecker);
+          clonedRow.appendChild(clonedTile);
+          break;
+
+        default:
+          clonedRow.appendChild(clonedTile);
+          break;
+      }
+    });
+    boardElement.appendChild(clonedRow);
+  });
+};
   const getCheckerIdentifier = (rowId, cellId) => {
     // TODO: Abstract this function and make it less verbose.
     if (player1Rows.includes(rowId)) {

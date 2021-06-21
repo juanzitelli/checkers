@@ -137,4 +137,19 @@ const getInitialBoardMatrix = ({ dimension, checkersRows, players }) => {
     );
 };
 
-bootstrapApp(GAME_CONFIG);
+const bootstrapApp = ({ players, board: { dimension, checkersRows } }) => {
+  const [boardElement] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.board
+  );
+
+  const matrixGenerationParams = {
+    dimension,
+    checkersRows,
+    players,
+  };
+
+  const initialBoardMatrix = getInitialBoardMatrix(matrixGenerationParams);
+  renderRows(boardElement, initialBoardMatrix);
+};
+
+window.onload = bootstrapApp(GAME_CONFIG);

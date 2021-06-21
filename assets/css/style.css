@@ -46,6 +46,17 @@
 
   /* Shadow */
   --box-shadow-sm: #f0f6fc1a 0px 4px 6px -1px, #f0f6fc0f 0px 2px 4px -1px;
+
+  /* Breakpoints */
+  --bp-xl: 1200px;
+  --bp-lg: 1024px;
+  --bp-md: 768px;
+  --bp-sm: 480px;
+
+  /* Tile size */
+  --min-tile-size: 2.5rem;
+  --max-tile-size: 5rem;
+  --preferred-tile-size: 10vw;
 }
 
 #body {

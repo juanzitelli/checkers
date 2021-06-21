@@ -92,6 +92,17 @@ const renderRows = (boardElement, initialBoardMatrix) => {
     boardElement.appendChild(clonedRow);
   });
 };
+
+const getInitialBoardMatrix = ({ dimension, checkersRows, players }) => {
+  // TODO: Merge these two functions into a single one.
+  const player1Rows = [...Array(dimension).keys()].filter(
+    (_, index) => index < checkersRows
+  );
+
+  const player2Rows = [...Array(dimension).keys()].filter(
+    (_, index) => index >= dimension - checkersRows
+  );
+
   const getCheckerIdentifier = (rowId, cellId) => {
     // TODO: Abstract this function and make it less verbose.
     if (player1Rows.includes(rowId)) {
@@ -117,16 +128,7 @@ const renderRows = (boardElement, initialBoardMatrix) => {
     }
   };
 
-  // TODO: Merge these two functions into a single one.
-  const player1Rows = [...Array(dimension).keys()].filter(
-    (_, index) => index < checkersRows
-  );
-
-  const player2Rows = [...Array(dimension).keys()].filter(
-    (_, index) => index >= dimension - checkersRows
-  );
-
-  const boardData = Array(dimension)
+  return Array(dimension)
     .fill(null)
     .map((_, rowId) =>
       Array(dimension)

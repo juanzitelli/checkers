@@ -32,8 +32,12 @@ const GAME_CONFIG = {
   },
 };
 
-const bootstrapApp = ({ players, board: { dimension, checkersRows } }) => {
-  const [board] = document.getElementsByClassName(KNOWN_CSS_CLASSES.board);
+const getContentFromTemplate = ({ templateId, elementCssClass }) => {
+  const template = document.getElementById(templateId).content.cloneNode(true);
+  return document
+    .importNode(template, true)
+    .querySelector(`.${elementCssClass}`);
+};
 
   const getCheckerIdentifier = (rowId, cellId) => {
     // TODO: Abstract this function and make it less verbose.

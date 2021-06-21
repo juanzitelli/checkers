@@ -6,6 +6,15 @@ const KNOWN_CSS_CLASSES = {
   redChecker: "checker--red",
 };
 
+const KNOWN_HTML_TEMPLATE_IDS = {
+  board: {
+    row: "row",
+    tile: "tile",
+    checkers: {
+      red: "red-piece",
+      white: "white-piece",
+    },
+  },
 };
 
 const GAME_CONFIG = {

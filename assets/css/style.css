@@ -147,13 +147,20 @@
   display: grid;
   grid-auto-flow: column;
 }
+
+.board__row .row__tile {
   display: flex;
   flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.board__row .row__item {
-  padding: var(--spacing--xlg);
+  height: clamp(
+    var(--min-tile-size),
+    var(--preferred-tile-size),
+    var(--max-tile-size)
+  );
+  width: clamp(
+    var(--min-tile-size),
+    var(--preferred-tile-size),
+    var(--max-tile-size)
+  );
 }
 
 .board__row:nth-child(odd) .row__item:nth-child(odd),

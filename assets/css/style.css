@@ -163,12 +163,12 @@
   );
 }
 
-.board__row:nth-child(odd) .row__item:nth-child(odd),
-.board__row:nth-child(even) .row__item:nth-child(even) {
+.board__row:nth-child(odd) .row__tile:nth-child(odd),
+.board__row:nth-child(even) .row__tile:nth-child(even) {
   background-color: var(--pure-white);
 }
 
-.board__row:nth-child(even) .row__item:nth-child(odd),
-.board__row:nth-child(odd) .row__item:nth-child(even) {
+.board__row:nth-child(even) .row__tile:nth-child(odd),
+.board__row:nth-child(odd) .row__tile:nth-child(even) {
   background-color: var(--pure-black);
 }

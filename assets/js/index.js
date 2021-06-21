@@ -1,5 +1,11 @@
 const KNOWN_CSS_CLASSES = {
   board: "game-area__board",
+  row: "board__row",
+  tile: "row__tile",
+  whiteChecker: "checker--white",
+  redChecker: "checker--red",
+};
+
 };
 
 const GAME_CONFIG = {

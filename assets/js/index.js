@@ -61,7 +61,24 @@ const GAME_CONFIG = {
   },
 };
 
-const getContentFromTemplate = ({ templateId, elementCssClass }) => {
+const appState = {
+  game: {
+    checkersStatus: {
+      value: null,
+    },
+    turns: {
+      currentTurn: null,
+    },
+    players: {
+      p1: {
+        checkersLeft: 12,
+      },
+      p2: {
+        checkersLeft: 12,
+      },
+    },
+  },
+};
   const template = document.getElementById(templateId).content.cloneNode(true);
   return document
     .importNode(template, true)

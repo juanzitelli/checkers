@@ -129,6 +129,8 @@ const renderNewTurn = () => {
     ? GAME_CONFIG.players.p2.id
     : GAME_CONFIG.players.p1.id;
 };
+
+const getContentFromHTMLTemplate = ({ templateId, elementCssClass }) => {
   const template = document.getElementById(templateId).content.cloneNode(true);
   return document
     .importNode(template, true)

@@ -46,6 +46,17 @@
 
   /* Shadow */
   --box-shadow-sm: #f0f6fc1a 0px 4px 6px -1px, #f0f6fc0f 0px 2px 4px -1px;
+
+  /* Breakpoints */
+  --bp-xl: 1200px;
+  --bp-lg: 1024px;
+  --bp-md: 768px;
+  --bp-sm: 480px;
+
+  /* Tile size */
+  --min-tile-size: 2.5rem;
+  --max-tile-size: 5rem;
+  --preferred-tile-size: 10vw;
 }
 
 #body {
@@ -104,14 +115,21 @@
   align-items: center;
 }
 
-.main-content__board {
+.main-content__game-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-area__board {
   display: flex;
   flex-direction: column;
   margin-top: var(--spacing--md);
   box-shadow: var(--box-shadow-sm);
 }
 
-.main-content__button {
+.game-area__button {
   background-color: var(--button-background-color--primary);
   color: var(--font-color);
   cursor: pointer;
@@ -124,7 +142,7 @@
   transition: opacity var(--transition-speed-medium);
 }
 
-.main-content__button:hover {
+.game-area__button:hover {
   opacity: var(--opacity-medium);
 }
 
@@ -133,34 +151,38 @@
 }
 
 .board__row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-.board__row .row__item {
-  padding: var(--spacing--xlg);
+  display: grid;
+  grid-auto-flow: column;
 }
 
-.board__row:nth-child(odd) .row__item:nth-child(odd),
-.board__row:nth-child(even) .row__item:nth-child(even) {
+.row__tile {
+  display: flex;
+  flex-direction: row;
+  height: clamp(
+    var(--min-tile-size),
+    var(--preferred-tile-size),
+    var(--max-tile-size)
+  );
+  width: clamp(
+    var(--min-tile-size),
+    var(--preferred-tile-size),
+    var(--max-tile-size)
+  );
+}
+
+.board__row:nth-child(odd) .row__tile:nth-child(odd),
+.board__row:nth-child(even) .row__tile:nth-child(even) {
   background-color: var(--pure-white);
 }
 
-.board__row:nth-child(even) .row__item:nth-child(odd),
-.board__row:nth-child(odd) .row__item:nth-child(even) {
+.board__row:nth-child(even) .row__tile:nth-child(odd),
+.board__row:nth-child(odd) .row__tile:nth-child(even) {
   background-color: var(--pure-black);
 }
 
-.has-red-piece,
-.has-white-piece {
-  background-size: cover;
-}
-
-.has-red-piece {
-  background-image: url(./../img/red-piece.png);
-}
-
-.has-white-piece {
-  background-image: url(./../img/white-piece.png);
+.checker--red,
+.checker--white {
+  aspect-ratio: 1/1;
+  max-width: 100%;
+  max-height: 100%;
 }

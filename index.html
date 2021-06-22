@@ -41,27 +41,23 @@
         <button class="game-area__button">New game</button>
       </section>
       <section class="main-content__score-area">
-        <div class="score-area__player-1">
-          <h2 class="player-title">Player 1</h2>
-          <div class="player-1__turn">
-            <span class="player-title__status status--active">Active turn</span>
-          </div>
+        <div class="score-area__player player-1 status--active">
+          <h2 class="player__title">Player 1</h2>
+          <span class="player__status">Active turn</span>
           <div class="player-1__pieces">
             <h3>
               Pieces remaining:
-              <span class="player-1__pieces__remaining">12</span>
+              <span class="pieces__remaining pieces__remaining--p1">12</span>
             </h3>
           </div>
         </div>
-        <div class="score-area__player-2">
-          <h2 class="player-title">Player 2</h2>
-          <div class="player-2__turn">
-            <span class="player-title__status status--waiting">Waiting</span>
-          </div>
+        <div class="score-area__player player-2">
+          <h2 class="player__title">Player 2</h2>
+          <span class="player__status">Waiting</span>
           <div class="player-2__pieces">
             <h3>
               Pieces remaining:
-              <span class="player-2__pieces__remaining">12</span>
+              <span class="pieces__remaining pieces__remaining--p2">12</span>
             </h3>
           </div>
         </div>

@@ -79,6 +79,7 @@ const appState = {
     },
   },
 };
+
 const renderNewTurn = () => {
   const isP1CurrentTurnOwner =
     appState.game.turns.currentTurn === GAME_CONFIG.players.p1.id;
@@ -137,39 +138,58 @@ const getContentFromHTMLTemplate = ({ templateId, elementCssClass }) => {
     .querySelector(`.${elementCssClass}`);
 };
 
+const generateTileId = (rowIndex, cellIndex) =>
+  `row-${rowIndex}-tile-${cellIndex}`;
+
+const onClickTileHandler = (tile) => {
+  const hasOwnChecker =
+    appState.game.turns.currentTurn != null &&
+    !!tile.querySelector(
+      `.${GAME_CONFIG.players[appState.game.turns.currentTurn].checkerClass}`
+    );
+
+  if (hasOwnChecker) {
+    renderNewTurn();
+  }
+};
+
 const renderRows = (boardElement, initialBoardMatrix) => {
   const rowElementParams = {
     templateId: KNOWN_HTML_TEMPLATE_IDS.board.row,
     elementCssClass: KNOWN_CSS_CLASSES.row,
   };
 
-  const rowElement = getContentFromTemplate(rowElementParams);
+  const rowElement = getContentFromHTMLTemplate(rowElementParams);
 
   const tileElementParams = {
     templateId: KNOWN_HTML_TEMPLATE_IDS.board.tile,
     elementCssClass: KNOWN_CSS_CLASSES.tile,
   };
 
-  const tileElement = getContentFromTemplate(tileElementParams);
+  const tileElement = getContentFromHTMLTemplate(tileElementParams);
 
   const whiteCheckerParams = {
     templateId: KNOWN_HTML_TEMPLATE_IDS.board.checkers.white,
     elementCssClass: KNOWN_CSS_CLASSES.whiteChecker,
   };
 
-  const whiteCheckerElement = getContentFromTemplate(whiteCheckerParams);
+  const whiteCheckerElement = getContentFromHTMLTemplate(whiteCheckerParams);
 
   const redCheckerParams = {
     templateId: KNOWN_HTML_TEMPLATE_IDS.board.checkers.red,
     elementCssClass: KNOWN_CSS_CLASSES.redChecker,
   };
 
-  const redCheckerElement = getContentFromTemplate(redCheckerParams);
+  const redCheckerElement = getContentFromHTMLTemplate(redCheckerParams);
 
-  initialBoardMatrix.forEach((row) => {
+  initialBoardMatrix.forEach((row, rowIndex) => {
     const clonedRow = rowElement.cloneNode(true);
-    row.forEach((cell) => {
+    row.forEach((cell, cellIndex) => {
       const clonedTile = tileElement.cloneNode(true);
+      clonedTile.id = generateTileId(rowIndex, cellIndex);
+      clonedTile.addEventListener(KNOWN_EVENT_NAMES.onClick, () => {
+        onClickTileHandler(clonedTile);
+      });
       switch (cell) {
         case 1:
           const clonedWhiteChecker = whiteCheckerElement.cloneNode(true);
@@ -181,7 +201,6 @@ const renderRows = (boardElement, initialBoardMatrix) => {
           clonedTile.appendChild(clonedRedChecker);
           clonedRow.appendChild(clonedTile);
           break;
-
         default:
           clonedRow.appendChild(clonedTile);
           break;
@@ -235,6 +254,18 @@ const getInitialBoardMatrix = ({ dimension, checkersRows, players }) => {
     );
 };
 
+const hideButtonShowScores = () => {
+  const [gameScoreboard] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.scoreboard
+  );
+  gameScoreboard.classList.add(KNOWN_CSS_CLASSES.gameStatus.gameStarted);
+  startGameButton.classList.add(KNOWN_CSS_CLASSES.gameStatus.gameStarted);
+};
+
+const [startGameButton] = document.getElementsByClassName(
+  KNOWN_CSS_CLASSES.startGameButton
+);
+
 const bootstrapApp = ({ players, board: { dimension, checkersRows } }) => {
   const [boardElement] = document.getElementsByClassName(
     KNOWN_CSS_CLASSES.board
@@ -247,7 +278,17 @@ const bootstrapApp = ({ players, board: { dimension, checkersRows } }) => {
   };
 
   const initialBoardMatrix = getInitialBoardMatrix(matrixGenerationParams);
+
+  appState.game.checkersStatus.value = initialBoardMatrix;
+
   renderRows(boardElement, initialBoardMatrix);
+
+  startGameButton.addEventListener(KNOWN_EVENT_NAMES.onClick, startGame);
+};
+
+const startGame = () => {
+  hideButtonShowScores();
+  appState.game.turns.currentTurn = GAME_CONFIG.players.p1.id;
 };
 
 window.onload = bootstrapApp(GAME_CONFIG);

@@ -191,4 +191,56 @@
   aspect-ratio: 1/1;
   max-width: 100%;
   max-height: 100%;
+  cursor: pointer;
+}
+
+.main-content__score-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: baseline;
+}
+.score-area__player {
+  padding: var(--spacing--lg);
+  border-radius: var(--border-radius);
+  margin: var(--spacing--sm);
+}
+
+.player-1 {
+  border: var(--border-width) solid var(--player-1-accent-color);
+}
+
+.player-2 {
+  border: var(--border-width) solid var(--player-2-accent-color);
+}
+
+.score-area__player.player-1.status--active {
+  background-color: var(--player-1-accent-color);
+}
+
+.score-area__player.player-2.status--active {
+  background-color: var(--player-2-accent-color);
+}
+
+/* Scores hidden by default, shown on game start */
+.main-content__score-area {
+  display: none;
+}
+
+/* Scores hidden by default, shown on game start */
+.main-content__score-area.game-started {
+  display: flex;
+  margin: var(--spacing--lg);
+}
+
+/* Start game button shown by default, hidden on game start */
+.game-area__button.game-started {
+  display: none;
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  .main-content__score-area {
+    flex-direction: row;
+  }
 }

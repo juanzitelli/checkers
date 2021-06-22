@@ -4,6 +4,31 @@ const KNOWN_CSS_CLASSES = {
   tile: "row__tile",
   whiteChecker: "checker--white",
   redChecker: "checker--red",
+  startGameButton: "game-area__button",
+  scoreboard: "main-content__score-area",
+  playersScoreboards: {
+    both: "score-area__player",
+    status: "player__status",
+    p1: "score-area__player player1",
+    p2: "score-area__player player2",
+  },
+  gameStatus: {
+    gameStarted: "game-started",
+    playerTurnActive: "status--active",
+  },
+};
+
+const KNOWN_EVENT_NAMES = {
+  onClick: "click",
+};
+
+const FIXTURE_TEXT = {
+  game: {
+    turns: {
+      activeTurn: "Active turn",
+      waiting: "Waiting",
+    },
+  },
 };
 
 const KNOWN_HTML_TEMPLATE_IDS = {

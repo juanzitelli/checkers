@@ -51,7 +51,7 @@
   /* Shadow */
   --box-shadow-sm: #f0f6fc1a 0px 4px 6px -1px, #f0f6fc0f 0px 2px 4px -1px;
 
-  /* Breakpoints */
+  /* Breakpoints (won't work on media queries but left for reference) */
   --bp-xl: 1200px;
   --bp-lg: 1024px;
   --bp-md: 768px;

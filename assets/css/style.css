@@ -20,6 +20,8 @@
   --background-color: var(--light-gray);
   --header-background-color: var(--dark-gray);
   --button-background-color--primary: var(--green);
+  --player-1-accent-color: var(--blue);
+  --player-2-accent-color: var(--red);
 
   /* Font */
   --font-color: var(--white);

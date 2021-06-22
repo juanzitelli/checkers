@@ -8,6 +8,8 @@
   --green: #2ea44f;
   --pure-black: #000;
   --pure-white: #fff;
+  --red: #ff5f56;
+  --blue: #0070f3;
 
   /* Borders */
   --border-color: var(--dark-gray);

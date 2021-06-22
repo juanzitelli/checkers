@@ -41,7 +41,26 @@
         <button class="game-area__button">New game</button>
       </section>
       <section class="main-content__score-area">
-        <!-- TODO: Add players, scores and remaining tiles -->
+        <div class="score-area__player player-1 status--active">
+          <h2 class="player__title">Player 1</h2>
+          <span class="player__status">Active turn</span>
+          <div class="player-1__pieces">
+            <h3>
+              Pieces remaining:
+              <span class="pieces__remaining pieces__remaining--p1">12</span>
+            </h3>
+          </div>
+        </div>
+        <div class="score-area__player player-2">
+          <h2 class="player__title">Player 2</h2>
+          <span class="player__status">Waiting</span>
+          <div class="player-2__pieces">
+            <h3>
+              Pieces remaining:
+              <span class="pieces__remaining pieces__remaining--p2">12</span>
+            </h3>
+          </div>
+        </div>
       </section>
     </main>
     <footer class="footer">
@@ -75,7 +94,7 @@
 
     <template id="red-piece">
       <img
-        class="checker--red"
+        class="checker checker--red"
         src="/assets/img/red-piece.png"
         alt="red checker"
       />
@@ -83,7 +102,7 @@
 
     <template id="white-piece">
       <img
-        class="checker--white"
+        class="checker checker--white"
         src="/assets/img/white-piece.png"
         alt="white checker"
       />

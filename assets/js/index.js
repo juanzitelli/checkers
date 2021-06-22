@@ -79,6 +79,56 @@ const appState = {
     },
   },
 };
+const renderNewTurn = () => {
+  const isP1CurrentTurnOwner =
+    appState.game.turns.currentTurn === GAME_CONFIG.players.p1.id;
+
+  const [scoreboard] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.scoreboard
+  );
+
+  const [player1Scoreboard, player2Scoreboard] =
+    scoreboard.getElementsByClassName(
+      KNOWN_CSS_CLASSES.playersScoreboards.both
+    );
+
+  const [p1Status] = player1Scoreboard.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.status
+  );
+
+  const [p2Status] = player2Scoreboard.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.status
+  );
+
+  if (isP1CurrentTurnOwner) {
+    player1Scoreboard.classList.toggle(
+      KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+    );
+    player2Scoreboard.classList.toggle(
+      KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+    );
+  } else {
+    player1Scoreboard.classList.toggle(
+      KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+    );
+    player2Scoreboard.classList.toggle(
+      KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+    );
+  }
+
+  const {
+    game: {
+      turns: { waiting, activeTurn },
+    },
+  } = FIXTURE_TEXT;
+
+  p1Status.innerText = isP1CurrentTurnOwner ? waiting : activeTurn;
+  p2Status.innerText = isP1CurrentTurnOwner ? activeTurn : waiting;
+
+  appState.game.turns.currentTurn = isP1CurrentTurnOwner
+    ? GAME_CONFIG.players.p2.id
+    : GAME_CONFIG.players.p1.id;
+};
   const template = document.getElementById(templateId).content.cloneNode(true);
   return document
     .importNode(template, true)

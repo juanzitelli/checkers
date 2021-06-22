@@ -50,9 +50,13 @@ const GAME_CONFIG = {
   players: {
     p1: {
       checkerIdentifier: 1,
+      checkerClass: KNOWN_CSS_CLASSES.whiteChecker,
+      id: "p1",
     },
     p2: {
       checkerIdentifier: 2,
+      checkerClass: KNOWN_CSS_CLASSES.redChecker,
+      id: "p2",
     },
   },
 };

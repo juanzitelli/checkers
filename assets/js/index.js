@@ -13,7 +13,7 @@ const KNOWN_CSS_CLASSES = {
   playersScoreboards: {
     both: {
       scoreboard: "score-area__player",
-    status: "player__status",
+      status: "player__status",
     },
     p1: {
       piecesRemaining: "pieces__remaining--p1",
@@ -272,7 +272,6 @@ const onClickTileHandler = ({
     cellIndex: clickedTileColumnIndex,
   },
 }) => {
-  // console.log(appState.game.checkersStatus);
   const hasOwnChecker =
     appState.game.turns.currentTurn != null &&
     !!tile.querySelector(
@@ -358,7 +357,6 @@ const onClickTileHandler = ({
         }
       }
     }
-    renderNewTurn();
   }
 };
 

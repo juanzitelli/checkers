@@ -288,37 +288,65 @@ const onClickTileHandler = ({
   }
 
   if (hasOwnChecker) {
-    // Borrar todos los colores de las celdas que tengan esa clase
+    availableMovements = getAvailableMovements(
+      clickedTileRowIndex,
+      clickedTileColumnIndex
+    );
+
     appState.game.checkersStatus.selectedTileWithCheckerId = generateTileId(
-      rowIndex,
-      cellIndex
+      clickedTileRowIndex,
+      clickedTileColumnIndex
     );
     tile.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
-    const availableMovements = getAvailableMovements(rowIndex, cellIndex);
+    clickedChecker = [clickedTileRowIndex, clickedTileColumnIndex];
 
     renderAvailableMovements(clickedTileRowIndex, clickedTileColumnIndex);
     appState.game.checkersStatus.isSelectingMovement = true;
   }
 
   if (appState.game.checkersStatus.isSelectingMovement) {
-    const availableMovements = getAvailableMovements(rowIndex, cellIndex);
     for (const availableMovement of availableMovements) {
       for (const tile of availableMovement) {
-        const [tileRow, tileColumn] = tile;
-        if (tileRow === rowIndex && tileColumn === cellIndex) {
-          const selectedTile = document.getElementById(
-            appState.game.checkersStatus.selectedTileWithCheckerId
-          );
-          const checker = selectedTile.getElementsByClassName(
-            KNOWN_CSS_CLASSES.checker
-          );
+        const [availableMovementRow, availableMovementColumn] = tile;
+        const clickedTileIsAvailableMovement =
+          availableMovementRow === clickedTileRowIndex &&
+          availableMovementColumn === clickedTileColumnIndex;
+        if (clickedTileIsAvailableMovement) {
+          const [clickedCheckerRowIndex, clickedCheckerColumnIndex] =
+            clickedChecker;
+          appState.game.checkersStatus.value[clickedCheckerRowIndex][
+            clickedCheckerColumnIndex
+          ] = null;
 
-          appState.game.checkersStatus.value[rowIndex][cellIndex] = null;
-
-          appState.game.checkersStatus.value[tileRow][tileColumn] =
+          appState.game.checkersStatus.value[availableMovementRow][
+            availableMovementColumn
+          ] =
             GAME_CONFIG.players[
               appState.game.turns.currentTurn
             ].checkerIdentifier;
+
+          const [, , eatenPieces] = tile;
+          if (eatenPieces) {
+            const {
+              eatenCell: { row, column, owner },
+            } = eatenPieces;
+
+            const ownerId =
+              owner === GAME_CONFIG.players.p1.checkerIdentifier
+                ? GAME_CONFIG.players.p1.id
+                : GAME_CONFIG.players.p2.id;
+
+            appState.game.players[ownerId].checkersLeft--;
+
+            const [piecesRemaining] = document.getElementsByClassName(
+              KNOWN_CSS_CLASSES.playersScoreboards[ownerId].piecesRemaining
+            );
+
+            piecesRemaining.innerHTML =
+              appState.game.players[ownerId].checkersLeft;
+
+            appState.game.checkersStatus.value[row][column] = null;
+          }
 
           const [boardElement] = document.getElementsByClassName(
             KNOWN_CSS_CLASSES.board
@@ -326,7 +354,7 @@ const onClickTileHandler = ({
 
           renderRows(boardElement, appState.game.checkersStatus.value);
           appState.game.checkersStatus.isSelectingMovement = false;
-          // 1.1.2 Clickee un posible movimiento
+          renderNewTurn();
         }
       }
     }

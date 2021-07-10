@@ -53,6 +53,11 @@ const KNOWN_HTML_TEMPLATE_IDS = {
   },
 };
 
+const KNOWN_MOVEMENT_DIRECTIONS = {
+  topDown: "topDown",
+  bottomUp: "bottomUp",
+};
+
 const KNOWN_TYPES = {
   undefined: "undefined",
 };
@@ -67,11 +72,13 @@ const GAME_CONFIG = {
       checkerIdentifier: 1,
       checkerClass: KNOWN_CSS_CLASSES.whiteChecker,
       id: "p1",
+      movementDirection: KNOWN_MOVEMENT_DIRECTIONS.topDown,
     },
     p2: {
       checkerIdentifier: 2,
       checkerClass: KNOWN_CSS_CLASSES.redChecker,
       id: "p2",
+      movementDirection: KNOWN_MOVEMENT_DIRECTIONS.bottomUp,
     },
   },
 };

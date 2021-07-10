@@ -267,7 +267,10 @@ const getAvailableMovements = (row, column) => {
 
 const onClickTileHandler = ({
   element: tile,
-  position: { rowIndex, cellIndex },
+  position: {
+    rowIndex: clickedTileRowIndex,
+    cellIndex: clickedTileColumnIndex,
+  },
 }) => {
   // console.log(appState.game.checkersStatus);
   const hasOwnChecker =

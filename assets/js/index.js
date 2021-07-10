@@ -118,15 +118,15 @@ const renderNewTurn = () => {
 
   const [player1Scoreboard, player2Scoreboard] =
     scoreboard.getElementsByClassName(
-      KNOWN_CSS_CLASSES.playersScoreboards.both
+      KNOWN_CSS_CLASSES.playersScoreboards.both.scoreboard
     );
 
   const [p1Status] = player1Scoreboard.getElementsByClassName(
-    KNOWN_CSS_CLASSES.playersScoreboards.status
+    KNOWN_CSS_CLASSES.playersScoreboards.both.status
   );
 
   const [p2Status] = player2Scoreboard.getElementsByClassName(
-    KNOWN_CSS_CLASSES.playersScoreboards.status
+    KNOWN_CSS_CLASSES.playersScoreboards.both.status
   );
 
   if (isP1CurrentTurnOwner) {

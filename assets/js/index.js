@@ -363,6 +363,9 @@ const onClickTileHandler = ({
 };
 
 const renderRows = (boardElement, initialBoardMatrix) => {
+  while (boardElement.firstChild) {
+    boardElement.removeChild(boardElement.lastChild);
+  }
   const rowElementParams = {
     templateId: KNOWN_HTML_TEMPLATE_IDS.board.row,
     elementCssClass: KNOWN_CSS_CLASSES.row,

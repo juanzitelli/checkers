@@ -9,11 +9,18 @@ const KNOWN_CSS_CLASSES = {
   checker: "checker",
   startGameButton: "game-area__button",
   scoreboard: "main-content__score-area",
+
   playersScoreboards: {
-    both: "score-area__player",
+    both: {
+      scoreboard: "score-area__player",
     status: "player__status",
-    p1: "score-area__player player1",
-    p2: "score-area__player player2",
+    },
+    p1: {
+      piecesRemaining: "pieces__remaining--p1",
+    },
+    p2: {
+      piecesRemaining: "pieces__remaining--p2",
+    },
   },
   gameStatus: {
     gameStarted: "game-started",

@@ -4,6 +4,7 @@ const KNOWN_CSS_CLASSES = {
   tile: "row__tile",
   whiteChecker: "checker--white",
   redChecker: "checker--red",
+  checker: "checker",
   startGameButton: "game-area__button",
   scoreboard: "main-content__score-area",
   playersScoreboards: {
@@ -15,6 +16,7 @@ const KNOWN_CSS_CLASSES = {
   gameStatus: {
     gameStarted: "game-started",
     playerTurnActive: "status--active",
+    selectedTile: "selected-tile",
   },
 };
 
@@ -42,6 +44,10 @@ const KNOWN_HTML_TEMPLATE_IDS = {
   },
 };
 
+const KNOWN_TYPES = {
+  undefined: "undefined",
+};
+
 const GAME_CONFIG = {
   board: {
     dimension: 8,
@@ -65,6 +71,8 @@ const appState = {
   game: {
     checkersStatus: {
       value: null,
+      isSelectingMovement: false,
+      selectedTileWithCheckerId: null,
     },
     turns: {
       currentTurn: null,
@@ -141,14 +149,97 @@ const getContentFromHTMLTemplate = ({ templateId, elementCssClass }) => {
 const generateTileId = (rowIndex, cellIndex) =>
   `row-${rowIndex}-tile-${cellIndex}`;
 
-const onClickTileHandler = (tile) => {
+const getAvailableMovements = (row, column) => {
+  const reducerFunction = (accumulator, currentRow, currentRowIndex) => {
+    accumulator.push(
+      currentRow.map((cell, cellIndex) => {
+        if (currentRowIndex === row + 1 || currentRowIndex === row - 1) {
+          if (cellIndex === column + 1 || cellIndex === column - 1) {
+            if (cell !== 1 && cell !== 2) {
+              return [currentRowIndex, cellIndex];
+            }
+          }
+        }
+      })
+    );
+    return accumulator
+      .map((item) =>
+        item.filter((item) => typeof item !== KNOWN_TYPES.undefined)
+      )
+      .filter((item) => item.length > 0);
+  };
+  return appState.game.checkersStatus.value.reduce(reducerFunction, []);
+};
+
+const onClickTileHandler = ({
+  element: tile,
+  position: { rowIndex, cellIndex },
+}) => {
+  // console.log(appState.game.checkersStatus);
   const hasOwnChecker =
     appState.game.turns.currentTurn != null &&
     !!tile.querySelector(
       `.${GAME_CONFIG.players[appState.game.turns.currentTurn].checkerClass}`
     );
 
+  const highlightedTiles = Array.from(
+    document.getElementsByClassName(KNOWN_CSS_CLASSES.gameStatus.selectedTile)
+  );
+
+  for (const tile of highlightedTiles) {
+    tile.classList.remove(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+  }
+
   if (hasOwnChecker) {
+    // Borrar todos los colores de las celdas que tengan esa clase
+    appState.game.checkersStatus.selectedTileWithCheckerId = generateTileId(
+      rowIndex,
+      cellIndex
+    );
+    tile.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+    const availableMovements = getAvailableMovements(rowIndex, cellIndex);
+
+    for (const item of availableMovements) {
+      for (const emptyTile of item) {
+        const [row, col] = emptyTile;
+        const tileID = generateTileId(row, col);
+        const tile = document.getElementById(tileID);
+        tile.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+      }
+    }
+    appState.game.checkersStatus.isSelectingMovement = true;
+  }
+
+  if (appState.game.checkersStatus.isSelectingMovement) {
+    const availableMovements = getAvailableMovements(rowIndex, cellIndex);
+    for (const availableMovement of availableMovements) {
+      for (const tile of availableMovement) {
+        const [tileRow, tileColumn] = tile;
+        if (tileRow === rowIndex && tileColumn === cellIndex) {
+          const selectedTile = document.getElementById(
+            appState.game.checkersStatus.selectedTileWithCheckerId
+          );
+          const checker = selectedTile.getElementsByClassName(
+            KNOWN_CSS_CLASSES.checker
+          );
+
+          appState.game.checkersStatus.value[rowIndex][cellIndex] = null;
+
+          appState.game.checkersStatus.value[tileRow][tileColumn] =
+            GAME_CONFIG.players[
+              appState.game.turns.currentTurn
+            ].checkerIdentifier;
+
+          const [boardElement] = document.getElementsByClassName(
+            KNOWN_CSS_CLASSES.board
+          );
+
+          renderRows(boardElement, appState.game.checkersStatus.value);
+          appState.game.checkersStatus.isSelectingMovement = false;
+          // 1.1.2 Clickee un posible movimiento
+        }
+      }
+    }
     renderNewTurn();
   }
 };
@@ -188,7 +279,13 @@ const renderRows = (boardElement, initialBoardMatrix) => {
       const clonedTile = tileElement.cloneNode(true);
       clonedTile.id = generateTileId(rowIndex, cellIndex);
       clonedTile.addEventListener(KNOWN_EVENT_NAMES.onClick, () => {
-        onClickTileHandler(clonedTile);
+        onClickTileHandler({
+          element: clonedTile,
+          position: {
+            rowIndex,
+            cellIndex,
+          },
+        });
       });
       switch (cell) {
         case 1:

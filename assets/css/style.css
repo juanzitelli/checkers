@@ -10,6 +10,7 @@
   --pure-white: #fff;
   --red: #ff5f56;
   --blue: #0070f3;
+  --yellow: #e3b341;
 
   /* Borders */
   --border-color: var(--dark-gray);
@@ -22,6 +23,7 @@
   --button-background-color--primary: var(--green);
   --player-1-accent-color: var(--blue);
   --player-2-accent-color: var(--red);
+  --selected-tile-color: var(--yellow);
 
   /* Font */
   --font-color: var(--white);
@@ -236,6 +238,11 @@
 /* Start game button shown by default, hidden on game start */
 .game-area__button.game-started {
   display: none;
+}
+
+/* Had to forcedly over-specify selectors to override black tile color */
+div.game-area__board div.board__row div.row__tile.selected-tile {
+  background-color: var(--selected-tile-color);
 }
 
 /* Desktop */

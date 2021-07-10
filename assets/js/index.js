@@ -170,13 +170,87 @@ const generateTileId = (rowIndex, cellIndex) =>
   `row-${rowIndex}-tile-${cellIndex}`;
 
 const getAvailableMovements = (row, column) => {
-  const reducerFunction = (accumulator, currentRow, currentRowIndex) => {
+  const reducerFunction = (
+    accumulator,
+    currentRow,
+    currentRowIndex,
+    sourceArray
+  ) => {
     accumulator.push(
-      currentRow.map((cell, cellIndex) => {
-        if (currentRowIndex === row + 1 || currentRowIndex === row - 1) {
-          if (cellIndex === column + 1 || cellIndex === column - 1) {
-            if (cell !== 1 && cell !== 2) {
-              return [currentRowIndex, cellIndex];
+      currentRow.map((cell, currentCellIndex) => {
+        const currentPlayer = appState.game.turns.currentTurn;
+        if (
+          GAME_CONFIG.players[currentPlayer].movementDirection ===
+          KNOWN_MOVEMENT_DIRECTIONS.topDown
+        ) {
+          //TODO: FIX THIS FOR GOD'S SAKE 😰 (nice code, dude)
+          if (currentRowIndex === row + 1) {
+            if (
+              currentCellIndex === column + 1 ||
+              currentCellIndex === column - 1
+            ) {
+              if (
+                cell !== GAME_CONFIG.players.p1.checkerIdentifier &&
+                cell !== GAME_CONFIG.players.p2.checkerIdentifier
+              ) {
+                return [currentRowIndex, currentCellIndex];
+              } else {
+                if (cell === GAME_CONFIG.players.p2.checkerIdentifier) {
+                  if (
+                    sourceArray[currentRowIndex + 1] &&
+                    sourceArray[currentRowIndex + 1][
+                      currentCellIndex < column ? column - 2 : column + 2
+                    ] == null
+                  ) {
+                    return [
+                      currentRowIndex + 1,
+                      currentCellIndex < column ? column - 2 : column + 2,
+                      {
+                        eatenCell: {
+                          row: currentRowIndex,
+                          column: currentCellIndex,
+                          owner: cell,
+                        },
+                      },
+                    ];
+                  }
+                }
+              }
+            }
+          }
+        } else {
+          if (currentRowIndex === row - 1) {
+            if (
+              currentCellIndex === column + 1 ||
+              currentCellIndex === column - 1
+            ) {
+              if (
+                cell !== GAME_CONFIG.players.p1.checkerIdentifier &&
+                cell !== GAME_CONFIG.players.p2.checkerIdentifier
+              ) {
+                return [currentRowIndex, currentCellIndex];
+              } else {
+                if (cell === GAME_CONFIG.players.p1.checkerIdentifier) {
+                  if (
+                    sourceArray[currentRowIndex - 1] &&
+                    sourceArray[currentRowIndex - 1][
+                      currentCellIndex < column ? column - 2 : column + 2
+                    ] === null
+                  ) {
+                    return [
+                      currentRowIndex - 1,
+                      currentCellIndex < column ? column - 2 : column + 2,
+                      {
+                        eatenCell: {
+                          row: currentRowIndex,
+                          column: currentCellIndex,
+                          owner: cell,
+                        },
+                      },
+                    ];
+                  }
+                }
+              }
             }
           }
         }

@@ -1,3 +1,5 @@
+"use strict";
+
 const KNOWN_CSS_CLASSES = {
   board: "game-area__board",
   row: "board__row",

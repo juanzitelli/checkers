@@ -104,6 +104,10 @@ const appState = {
   },
 };
 
+// TODO: Find where to fit these variables into appState.
+let availableMovements = null;
+let clickedChecker = null;
+
 const renderNewTurn = () => {
   const isP1CurrentTurnOwner =
     appState.game.turns.currentTurn === GAME_CONFIG.players.p1.id;

@@ -215,14 +215,7 @@ const onClickTileHandler = ({
     tile.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
     const availableMovements = getAvailableMovements(rowIndex, cellIndex);
 
-    for (const item of availableMovements) {
-      for (const emptyTile of item) {
-        const [row, col] = emptyTile;
-        const tileID = generateTileId(row, col);
-        const tile = document.getElementById(tileID);
-        tile.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
-      }
-    }
+    renderAvailableMovements(clickedTileRowIndex, clickedTileColumnIndex);
     appState.game.checkersStatus.isSelectingMovement = true;
   }
 
@@ -403,5 +396,18 @@ const startGame = () => {
   hideButtonShowScores();
   appState.game.turns.currentTurn = GAME_CONFIG.players.p1.id;
 };
+
+function renderAvailableMovements(rowIndex, cellIndex) {
+  const availableMovements = getAvailableMovements(rowIndex, cellIndex);
+
+  for (const item of availableMovements) {
+    for (const emptyTile of item) {
+      const [row, col] = emptyTile;
+      const tileID = generateTileId(row, col);
+      const tile = document.getElementById(tileID);
+      tile?.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+    }
+  }
+}
 
 window.onload = bootstrapApp(GAME_CONFIG);

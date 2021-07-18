@@ -32,3 +32,20 @@ async function postFormDataAsJson({ url, formData }) {
 
   return response.json();
 }
+
+const onSubmitEventHandler = async (event) => {
+  event.preventDefault();
+
+  const form = event.currentTarget;
+  const url = form.action;
+
+  try {
+    const formData = new FormData(form);
+    const { token } = await postFormDataAsJson({ url, formData });
+
+    alert(`Request was sent successfully! 🥳 API responded with: ${token}`);
+  } catch (error) {
+    alert(`Something went wrong... 😑 API responded with: ${error}`);
+    console.error(error);
+  }
+};

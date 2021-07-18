@@ -2,11 +2,19 @@
 
 ## Contenido de la actividad
 
-Continuar el proyecto desarrollado en la Clase 11, agregandole jugabilidad a las Damas. El objetivo de esta semana es poder comer fichas del oponente, es decir que se debe detectar el jugador actual, la ficha seleccionada y los casilleros disponibles para mover dicha ficha o comer una ficha contigua. Cuanto el jugador termina su movimiento, se debe pasar el turno al siguiente jugador. No es necesario crear la habilidad de comer mas de una ficha a la vez, ni detectar si se ha ganado la partida.
+Continuar el proyecto desarrollado en el TP3, agregando un formulario de contacto que debe contener los campos:
 
-El codigo HTML, CSS y JavaScript desarrollado debe ser subido a Github con sus commits correspondientes.
+- Nombre Completo
+- Email
+- Comentario
 
-El repositorio debe ser el mismo que se utilizó para la Clase 10, actualizando el Readme y los cambios deben ser visibles utilizando Github Pages.
+Agregar un botón al final del formulario que diga “enviar” y que al presionar se realice una consulta HTTP utilizando una API pública enviando los datos cargados en los campos del formulario (usar método Fetch de JS para la consulta/request). La url o API para hacer la consulta puede ser cualquiera, y no es necesario que devuelva una respuesta correcta.
+
+El formulario de contacto debe visualizarse correctamente en cualquier dispositivo (diseño responsivo), y se recomienda hacerlo en una nueva página HTML, manteniendo la estética del juego de Damas.
+
+El código HTML, CSS y JavaScript desarrollado debe ser subido a Github con sus commits correspondientes.
+
+El repositorio debe ser el mismo que se utilizó para el TP3, actualizando el Readme y los cambios deben ser visibles utilizando Github Pages.
 
 Esta semana se evaluará:
 

@@ -49,3 +49,10 @@ const onSubmitEventHandler = async (event) => {
     console.error(error);
   }
 };
+
+const setupFormSubmission = ({ formId }) => {
+  const form = document.getElementById(formId);
+  form.addEventListener(KNOWN_EVENT_NAMES.submit, onSubmitEventHandler);
+};
+
+setupFormSubmission({ formId: KNOWN_HTML_IDS.userDataForm });

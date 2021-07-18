@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="keywords"
+      content="checkers, university, project, board, student"
+    />
+    <meta name="author" content="Juan Agustín Zitelli" />
+    <meta name="copyright" content="Juan Agustín Zitelli" />
+    <meta name="robots" content="follow" />
+    <link rel="icon" href="./assets/img/checkers.ico" />
+    <link rel="stylesheet" href="./assets/css/reset.css" />
+    <link rel="stylesheet" href="./assets/css/style.css" />
+    <link rel="stylesheet" href="./assets/css/form.css" />
+    <script src="./assets/js/form.js" defer></script>
+    <title>Checkers | Form</title>
+  </head>
+  <body id="body">
+    <header class="header">
+      <nav class="header__navigation">
+        <ul class="navigation__list">
+          <li class="list__header-item">
+            <h1 class="heading">
+              <a class="link list__header-item__link" href="#">Checkers</a>
+            </h1>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main class="main-content">
+      <section class="main-content__data-submission">
+        <h1>User data form</h1>
+        <p>Please fill the form with your data and hit the submit button!</p>
+        <form
+          action="https://reqres.in/api/login"
+          id="data-submission__form"
+          class="data-submission__form"
+        >
+          <div class="form__control">
+            <label class="control__label" for="name">Full name</label
+            ><input
+              class="control__input"
+              type="text"
+              name="name"
+              id="name"
+              placeholder="Juan Zitelli"
+              required
+            />
+          </div>
+          <div class="form__control">
+            <label class="control__label" for="email">Email</label
+            ><input
+              class="control__input"
+              type="email"
+              name="email"
+              id="email"
+              placeholder="john.doe@email.com"
+              required
+            />
+          </div>
+          <div class="form__control">
+            <label class="control__label" for="comment">Comment</label>
+            <textarea
+              class="control__textarea"
+              rows="10"
+              cols="30"
+              name="comment"
+              id="comment"
+              placeholder="Type your comment here ✨"
+            ></textarea>
+          </div>
+          <div class="form__control">
+            <button class="control__submit-button" type="submit">Submit</button>
+          </div>
+          <!-- Fields added for the POST request to succeed -->
+          <input type="hidden" name="username" value="eve.holt@reqres.in" />
+          <input type="hidden" name="password" value="cityslicka" />
+        </form>
+      </section>
+    </main>
+    <footer class="footer">
+      <nav class="footer__navigation">
+        <ul class="navigation__list">
+          <li class="list__footer-item">
+            ©
+            <a class="list__footer-item__link" href="https://juanzitelli.dev"
+              ><strong>juanzitelli.dev</strong></a
+            >
+            2021
+          </li>
+          <li class="list__footer-item">
+            <a
+              class="list__footer-item__link"
+              href="mailto:juanzitelli7@gmail.com"
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </body>
+</html>

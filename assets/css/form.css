@@ -1,0 +1,53 @@
+/* Form-specific variables */
+
+:root {
+  /* Form */
+  --form-spacing: var(--spacing--lg);
+
+  /* Inputs */
+  --input-spacing--sm: var(--spacing--sm);
+  --input-spacing--md: var(--spacing--md);
+  --input-spacing--xlg: var(--spacing--xlg);
+  --input-border-radius: var(--border-radius--sm);
+  --input-inner-space: 0.7rem;
+}
+
+.data-submission__form {
+}
+
+.form__control .control__label {
+  display: block;
+}
+
+.control__input,
+.control__textarea {
+  display: block;
+  border-radius: var(--input-border-radius);
+  font-size: var(--font-size--regular);
+  font-family: inherit;
+  margin: var(--input-spacing--sm) 0;
+  border: var(--border-width) solid var(--border-color);
+  padding: var(--input-inner-space);
+}
+
+.form__control {
+  display: flex;
+  flex-direction: column;
+  margin: var(--form-spacing) 0;
+}
+
+.control__submit-button {
+  background-color: var(--button-background-color--primary);
+  color: var(--font-color);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size--regular);
+  padding: var(--spacing--md) var(--spacing--xlg);
+  border-radius: var(--border-radius--md);
+  transition: opacity var(--transition-speed-medium);
+}
+
+.control__submit-button:hover {
+  opacity: var(--opacity-medium);
+}

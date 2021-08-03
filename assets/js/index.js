@@ -2,13 +2,13 @@
 
 const KNOWN_CSS_CLASSES = {
   board: "game-area__board",
+  checker: "checker",
+  redChecker: "checker--red",
   row: "board__row",
+  scoreboard: "main-content__score-area",
+  startGameButton: "game-area__button",
   tile: "row__tile",
   whiteChecker: "checker--white",
-  redChecker: "checker--red",
-  checker: "checker",
-  startGameButton: "game-area__button",
-  scoreboard: "main-content__score-area",
 
   playersScoreboards: {
     both: {
@@ -17,9 +17,11 @@ const KNOWN_CSS_CLASSES = {
     },
     p1: {
       piecesRemaining: "pieces__remaining--p1",
+      name: "player-1__name",
     },
     p2: {
       piecesRemaining: "pieces__remaining--p2",
+      name: "player-2__name",
     },
   },
   gameStatus: {
@@ -96,9 +98,11 @@ const appState = {
     players: {
       p1: {
         checkersLeft: 12,
+        name: "Player 1",
       },
       p2: {
         checkersLeft: 12,
+        name: "Player 2",
       },
     },
   },
@@ -503,8 +507,31 @@ const bootstrapApp = ({ players, board: { dimension, checkersRows } }) => {
 
 const startGame = () => {
   hideButtonShowScores();
+  getAndAssignPlayersNames();
   appState.game.turns.currentTurn = GAME_CONFIG.players.p1.id;
 };
+
+function getAndAssignPlayersNames() {
+  appState.game.players.p1.name = prompt(
+    "Hey! Player 1! What's your name?",
+    "Human one"
+  );
+  appState.game.players.p2.name = prompt(
+    "How about you, Player 2?",
+    "Human two"
+  );
+  const [p1Title] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.p1.name
+  );
+
+  p1Title.innerText = appState.game.players.p1.name;
+
+  const [p2Title] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.p2.name
+  );
+
+  p2Title.innerText = appState.game.players.p2.name;
+}
 
 function renderAvailableMovements(rowIndex, cellIndex) {
   const availableMovements = getAvailableMovements(rowIndex, cellIndex);

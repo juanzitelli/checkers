@@ -104,7 +104,6 @@ const appState = {
   },
 };
 
-// TODO: Find where to fit these variables into appState.
 let availableMovements = null;
 let clickedChecker = null;
 

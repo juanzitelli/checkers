@@ -514,11 +514,11 @@ const startGame = () => {
 function getAndAssignPlayersNames() {
   appState.game.players.p1.name = prompt(
     "Hey! Player 1! What's your name?",
-    "Human one"
+    "John Doe"
   );
   appState.game.players.p2.name = prompt(
     "How about you, Player 2?",
-    "Human two"
+    "Jane Doe"
   );
   const [p1Title] = document.getElementsByClassName(
     KNOWN_CSS_CLASSES.playersScoreboards.p1.name

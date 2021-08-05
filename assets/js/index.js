@@ -72,11 +72,13 @@ const GAME_CONFIG = {
   players: {
     p1: {
       checkerIdentifier: 1,
+      kingIdentifier: 10,
       checkerClass: KNOWN_CSS_CLASSES.whiteChecker,
       id: "p1",
       movementDirection: KNOWN_MOVEMENT_DIRECTIONS.topDown,
     },
     p2: {
+      kingIdentifier: 20,
       checkerIdentifier: 2,
       checkerClass: KNOWN_CSS_CLASSES.redChecker,
       id: "p2",

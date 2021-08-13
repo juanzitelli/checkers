@@ -112,7 +112,7 @@
   padding: var(--spacing--md);
 }
 
-.list__footer-item__link {
+.navigation__footer-item__link {
   color: var(--font-color);
   text-decoration: none;
   display: flex;
@@ -127,7 +127,7 @@
   border-top: var(--border-width) solid var(--border-color);
 }
 
-.list__footer-item {
+.navigation__footer-item {
   display: inline-block;
 }
 
@@ -148,7 +148,7 @@
 .filter__title {
   padding-bottom: var(--spacing--sm);
 }
-.list__header-item__link {
+.navigation__header-item__link {
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -164,15 +164,15 @@
   align-items: center;
 }
 
-.list__header-item,
-.list__footer-item {
+.navigation__header-item,
+.navigation__footer-item {
   list-style-type: none;
   padding: 0 var(--spacing--sm);
   transition: opacity var(--transition-speed-medium);
 }
 
-.list__header-item:hover,
-.list__footer-item:hover {
+.navigation__header-item:hover,
+.navigation__footer-item:hover {
   opacity: var(--opacity-medium);
 }
 
@@ -231,13 +231,9 @@
   transition: opacity var(--transition-speed-medium);
 }
 
-.game-area__button {
-  margin: var(--spacing--sm);
-  padding: var(--spacing--md) var(--spacing--xlg);
-}
-
-.header-item__button {
-  padding: var(--spacing--sm) var(--spacing--md);
+.button--primary {
+  background-color: var(--button-background-color--primary);
+  color: var(--font-color);
 }
 
 .button--secondary {
@@ -245,13 +241,17 @@
   color: var(--font-color);
 }
 
-.button--primary {
-  background-color: var(--button-background-color--primary);
-  color: var(--font-color);
-}
-
 .game-area__button:hover {
   opacity: var(--opacity-medium);
+}
+
+.game-area__button {
+  margin: var(--spacing--sm);
+  padding: var(--spacing--md) var(--spacing--xlg);
+}
+
+.header-item__button {
+  background-color: transparent;
 }
 
 .button__label {
@@ -459,10 +459,8 @@
   .button__icon {
     margin-right: 0.5rem;
   }
-  .list__header-item,
-  .list__footer-item {
+  .navigation__header-item,
+  .navigation__footer-item {
     padding: 0 var(--spacing--lg);
-  }
-  .header-item__button {
   }
 }

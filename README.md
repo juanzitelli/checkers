@@ -1,6 +1,6 @@
 # TRABAJO FINAL 2021 - ✨*Checkers*✨
 
-> Desarrollar una version web del juego ("Damas")[https://es.wikipedia.org/wiki/Damas] con las siguientes consideraciones:
+> Desarrollar una version web del juego ["Damas"](https://es.wikipedia.org/wiki/Damas) con las siguientes consideraciones:
 
 - Requeridos
 

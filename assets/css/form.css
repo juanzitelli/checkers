@@ -15,6 +15,11 @@
 .data-submission__form {
 }
 
+.main-content__data-submission {
+  max-width: 30rem;
+  min-width: 30rem;
+}
+
 .form__control .control__label {
   display: block;
 }

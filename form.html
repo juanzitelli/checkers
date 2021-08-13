@@ -15,7 +15,8 @@
     <link rel="stylesheet" href="./assets/css/reset.css" />
     <link rel="stylesheet" href="./assets/css/style.css" />
     <link rel="stylesheet" href="./assets/css/form.css" />
-    <script src="./assets/js/form.js" defer></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script type="module" src="./assets/js/form.js" defer></script>
     <title>Checkers | Form</title>
   </head>
   <body id="body">
@@ -23,9 +24,33 @@
       <nav class="header__navigation">
         <ul class="navigation__list">
           <li class="list__header-item">
-            <h1 class="heading">
-              <a class="link list__header-item__link" href="#">Checkers</a>
-            </h1>
+            <a id="main-title" class="link list__header-item__link" href="/"
+              >Checkers</a
+            >
+          </li>
+          <li class="list__header-item">
+            <a
+              class="link list__header-item__link"
+              target="_blank"
+              href="https://github.com/juanzitelli/checkers"
+              title="Github repository"
+              ><i class="link__icon" alt="Github icon" data-feather="github"></i
+              ><span class="icon__label">Github repository</span></a
+            >
+          </li>
+          <li class="list__header-item">
+            <a
+              class="link list__header-item__link"
+              target="_blank"
+              href="https://en.wikipedia.org/wiki/Draughts"
+              title="Github repository"
+              ><i
+                class="link__icon"
+                alt="Game help icon"
+                data-feather="help-circle"
+              ></i
+              ><span class="icon__label">Rules</span></a
+            >
           </li>
         </ul>
       </nav>
@@ -34,13 +59,9 @@
       <section class="main-content__data-submission">
         <h1>User data form</h1>
         <p>Please fill the form with your data and hit the submit button!</p>
-        <form
-          action="https://reqres.in/api/login"
-          id="data-submission__form"
-          class="data-submission__form"
-        >
+        <form id="data-submission__form" class="data-submission__form">
           <div class="form__control">
-            <label class="control__label" for="name">Full name</label
+            <label class="control__label" for="name">Name</label
             ><input
               class="control__input"
               type="text"
@@ -62,44 +83,49 @@
             />
           </div>
           <div class="form__control">
-            <label class="control__label" for="comment">Comment</label>
+            <label class="control__label" for="message">Comment</label>
             <textarea
               class="control__textarea"
               rows="10"
               cols="30"
-              name="comment"
-              id="comment"
-              placeholder="Type your comment here ✨"
+              name="message"
+              id="message"
+              placeholder="Type your message here ✨"
             ></textarea>
           </div>
           <div class="form__control">
             <button class="control__submit-button" type="submit">Submit</button>
           </div>
-          <!-- Fields added for the POST request to succeed -->
-          <input type="hidden" name="username" value="eve.holt@reqres.in" />
-          <input type="hidden" name="password" value="cityslicka" />
         </form>
+        <div class="error-messages-container"></div>
       </section>
     </main>
     <footer class="footer">
       <nav class="footer__navigation">
         <ul class="navigation__list">
           <li class="list__footer-item">
-            ©
-            <a class="list__footer-item__link" href="https://juanzitelli.dev"
-              ><strong>juanzitelli.dev</strong></a
+            <a
+              class="list__footer-item__link"
+              href="https://www.polywork.com/juanzitelli"
+              ><strong>juanzitelli</strong></a
             >
-            2021
           </li>
           <li class="list__footer-item">
             <a
-              class="list__footer-item__link"
-              href="mailto:juanzitelli7@gmail.com"
-              >Contact</a
+              class="link list__footer-item__link"
+              href="/form.html"
+              target="_blank"
+              title="Open email form"
+              ><i class="link__icon" alt="Email icon" data-feather="mail"></i
+              ><span class="icon__label">Open email form</span></a
             >
           </li>
         </ul>
       </nav>
     </footer>
   </body>
+
+  <script>
+    feather.replace();
+  </script>
 </html>

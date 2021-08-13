@@ -14,7 +14,29 @@
     <link rel="icon" href="./assets/img/checkers.ico" />
     <link rel="stylesheet" href="./assets/css/reset.css" />
     <link rel="stylesheet" href="./assets/css/style.css" />
-    <script src="./assets/js/index.js" defer></script>
+    <script
+      type="module"
+      src="./assets/js/utilities/fixtures.utilities.js"
+      defer
+    ></script>
+    <script
+      type="module"
+      src="./assets/js/utilities/dom.utilities.js"
+      defer
+    ></script>
+    <script
+      type="module"
+      src="./assets/js/hooks/useHistoryModule.js"
+      defer
+    ></script>
+    <script
+      type="module"
+      src="./assets/js/hooks/useLocalStorageState.js"
+      defer
+    ></script>
+
+    <script type="module" src="./assets/js/index.js" defer></script>
+    <script src="https://unpkg.com/feather-icons"></script>
     <title>Checkers</title>
   </head>
   <body id="body">
@@ -22,56 +44,154 @@
       <nav class="header__navigation">
         <ul class="navigation__list">
           <li class="list__header-item">
-            <h1 class="heading">
-              <a class="link list__header-item__link" href="#">Checkers</a>
-            </h1>
+            <a id="main-title" class="link list__header-item__link" href="/"
+              >Checkers</a
+            >
+          </li>
+          <li class="list__header-item">
+            <a
+              class="link list__header-item__link"
+              target="_blank"
+              href="https://github.com/juanzitelli/checkers"
+              title="Github repository"
+              ><i class="link__icon" alt="Github icon" data-feather="github"></i
+              ><span class="icon__label">Github repository</span></a
+            >
+          </li>
+          <li class="list__header-item">
+            <a
+              class="link list__header-item__link"
+              target="_blank"
+              href="https://en.wikipedia.org/wiki/Draughts"
+              title="Github repository"
+              ><i
+                class="link__icon"
+                alt="Game help icon"
+                data-feather="help-circle"
+              ></i
+              ><span class="icon__label">Rules</span></a
+            >
+          </li>
+          <li class="list__header-item">
+            <button
+              class="header-item__button button--secondary"
+              id="history-module__modal-trigger"
+            >
+              <i class="button__icon" data-feather="clock"></i
+              ><span class="button__label">History module</span>
+            </button>
           </li>
         </ul>
       </nav>
     </header>
     <main class="main-content">
       <section class="main-content__game-area">
+        <header class="game-area__header">
+          <h1 class="header__title">
+            Welcome to <span class="logo">Checkers</span>!
+          </h1>
+          <h2 class="header__subtitle">Ready for some fun?</h2>
+        </header>
         <div class="game-area__board"></div>
-        <button class="game-area__button">New game</button>
       </section>
       <section class="main-content__score-area">
         <div class="score-area__player player-1 status--active">
-          <h2 class="player__title">Player 1</h2>
+          <h2 class="player__title player-1__name">Player 1</h2>
           <span class="player__status">Active turn</span>
           <div class="player-1__pieces">
-            <h3>
-              Pieces remaining:
-              <span class="pieces__remaining pieces__remaining--p1">12</span>
-            </h3>
+            <h4>
+              Score:
+              <span class="pieces__score pieces__score--p1">0</span>
+            </h4>
           </div>
         </div>
         <div class="score-area__player player-2">
-          <h2 class="player__title">Player 2</h2>
+          <h2 class="player__title player-2__name">Player 2</h2>
           <span class="player__status">Waiting</span>
           <div class="player-2__pieces">
-            <h3>
-              Pieces remaining:
-              <span class="pieces__remaining pieces__remaining--p2">12</span>
-            </h3>
+            <h4>
+              Score:
+              <span class="pieces__score pieces__score--p2">0</span>
+            </h4>
           </div>
         </div>
       </section>
+      <section class="main-content__actions">
+        <button
+          id="load-game-button"
+          class="game-area__button button--secondary"
+          disabled
+        >
+          Load game
+        </button>
+        <button
+          id="save-game-button"
+          class="game-area__button button--secondary"
+          disabled
+        >
+          Save game
+        </button>
+        <button
+          id="start-game-button"
+          class="game-area__button button--primary"
+        >
+          New game
+        </button>
+      </section>
+      <div id="history-module-modal" class="modal">
+        <div class="history-module-modal__content">
+          <i data-feather="x" class="close"></i>
+          <section class="main-content__history-module">
+            <header>
+              <h2 class="history-module__title">Games history</h2>
+            </header>
+            <article class="history-module__filters">
+              <h3 class="filter__title">Filter historical games</h3>
+              <label>
+                <input
+                  type="radio"
+                  value="date"
+                  name="filter"
+                  id="filter__date"
+                />
+                Most recent first
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  value="score"
+                  name="filter"
+                  id="filter__score"
+                />
+                Highest score first
+              </label>
+            </article>
+            <div class="history-module__container"></div>
+          </section>
+        </div>
+      </div>
     </main>
     <footer class="footer">
       <nav class="footer__navigation">
         <ul class="navigation__list">
           <li class="list__footer-item">
-            ©
-            <a class="list__footer-item__link" href="https://juanzitelli.dev"
-              ><strong>juanzitelli.dev</strong></a
+            <a
+              class="list__footer-item__link"
+              target="_blank"
+              href="https://www.polywork.com/juanzitelli"
+              title="Juan Agustín Zitelli Polywork's profile"
+              ><strong>juanzitelli</strong></a
             >
-            2021
           </li>
           <li class="list__footer-item">
             <a
-              class="list__footer-item__link"
-              href="mailto:juanzitelli7@gmail.com"
-              >Contact</a
+              class="link list__footer-item__link"
+              href="/form.html"
+              target="_blank"
+              title="Open email form"
+              ><i class="link__icon" alt="Email icon" data-feather="mail"></i
+              ><span class="icon__label">Open email form</span></a
             >
           </li>
         </ul>
@@ -90,7 +210,7 @@
       <img
         class="checker checker--red"
         src="./assets/img/red-piece.png"
-        alt="red checker"
+        alt="Red king"
       />
     </template>
 
@@ -98,8 +218,34 @@
       <img
         class="checker checker--white"
         src="./assets/img/white-piece.png"
-        alt="white checker"
+        alt="White king"
       />
     </template>
+
+    <template id="red-king">
+      <img
+        class="checker king--red"
+        src="./assets/img/red-king.png"
+        alt="Red king"
+      />
+    </template>
+
+    <template id="white-king">
+      <img
+        class="checker king--white"
+        src="./assets/img/white-king.png"
+        alt="White king"
+      />
+    </template>
+
+    <template id="history-game">
+      <article class="history-game__container">
+        <h4 class="history-game__result"></h4>
+        <div class="history-game__players"></div>
+      </article>
+    </template>
   </body>
+  <script>
+    feather.replace();
+  </script>
 </html>

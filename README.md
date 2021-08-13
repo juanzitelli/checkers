@@ -1,41 +1,29 @@
-# Trabajo practico 1 - ✨*Checkers*✨
+# TRABAJO FINAL 2021 - ✨*Checkers*✨
 
-## Contenido de la actividad
+> Desarrollar una version web del juego ("Damas")[https://es.wikipedia.org/wiki/Damas] con las siguientes consideraciones:
 
-Continuar el proyecto desarrollado en el TP3, agregando un formulario de contacto que debe contener los campos:
+- Requeridos
 
-- Nombre Completo
-- Email
-- Comentario
+  - Código prolijo.
+  - Consistencia en comentarios, commits y estilos de código.
+  - Diseño responsivo, estética del juego y de la web (usando Flexbox).
+  - Juego completamente funcional para dos jugadores permitiendo ingresar nombres de los jugadores al iniciar la partida.
+  - Agregar funcionalidad de guardar y cargar partida en el juego usando LocalStorage.
+  - Agregar puntaje por cada ficha comida y mostrar los puntos.
+  - Detectar el momento en que un jugador ha ganado la partida y mostrar un cartel informativo.
+  - Detectar el momento en que no hay más movimientos posibles y mostrar un cartel de empate.
+  - Crear una página de Contacto, con un formulario que permita ingresar nombre, mail y mensaje, y al enviar se abra la herramienta de envío de emails predeterminada del sistema operativo.
+  - Validaciones del formulario de contacto (nombre alfanumérico, mail válido y mensaje con más de 5 caracteres).
 
-Agregar un botón al final del formulario que diga “enviar” y que al presionar se realice una consulta HTTP utilizando una API pública enviando los datos cargados en los campos del formulario (usar método Fetch de JS para la consulta/request). La url o API para hacer la consulta puede ser cualquiera, y no es necesario que devuelva una respuesta correcta.
+- Deseables:
+  - Guardar el resultado de las partidas ganadas, fecha de partida y el puntaje obtenido.
+  - Agregar un botón para mostrar un popup con la lista de partidas con jugadores, puntajes y fechas.
+  - Agregar la opción de ordenar la lista de partidas por fecha o puntaje.
+  - Agregar un link a la página de Github donde se alojó el código del juego, que al apretarlo se abre en una nueva pestaña.
 
-El formulario de contacto debe visualizarse correctamente en cualquier dispositivo (diseño responsivo), y se recomienda hacerlo en una nueva página HTML, manteniendo la estética del juego de Damas.
-
-El código HTML, CSS y JavaScript desarrollado debe ser subido a Github con sus commits correspondientes.
-
-El repositorio debe ser el mismo que se utilizó para el TP3, actualizando el Readme y los cambios deben ser visibles utilizando Github Pages.
-
-Esta semana se evaluará:
-
-- Correcta funcionalidad de JavaScript.
-- Correcto manejo de Eventos del navegador.
-- Responsividad del contenido, visible correctamente en celulares, tablets y monitores.
-- Cumplimiento de la consigna y los contenidos.
-- Contenido completo y prolijo del Readme.
-- Prolijidad del codigo realizado, tanto HTML, CSS como JS. Prestar atención a la indentacion, puntuacion, etc.
-- Correcto y frecuente uso de commits de Git.
-- Correcta visualizacion del sitio en Github Pages.
-- Colaboración con los compañeros de clase para mejorar los conocimientos y avanzar como grupo.
-
-## Buenas prácticas:
-
-- Escribir código prolijo.
-- Respetar indentaciones.
-- Usar nombres apropiados para clases, ids, archivos, commits, etc.
-- Eliminar código html o CSS que no sea utilizado.
-- Utilizar etiquetas HTML correspondientes para cada caso.
-- ¡¡No copiar y pegar ejemplos porque el profesor se da cuenta!!
+Los puntos requeridos son obligatorios para aprobar.
+Los puntos deseables son opcionales y se suman a la nota.
+Si los puntos requeridos y deseables se desarrollan correctamente, la nota es un 10.
 
 ## Licencia
 

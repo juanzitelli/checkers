@@ -167,7 +167,7 @@
 .list__header-item,
 .list__footer-item {
   list-style-type: none;
-  padding: 0 var(--spacing--md);
+  padding: 0 var(--spacing--sm);
   transition: opacity var(--transition-speed-medium);
 }
 
@@ -218,31 +218,36 @@
   display: flex;
 }
 
-.game-area__button,
-.header-item__button {
+.header-item__button,
+.game-area__button {
   display: flex;
   flex-direction: row;
   align-items: center;
-  color: var(--font-color);
   cursor: pointer;
   font-family: inherit;
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size--regular);
-  padding: var(--spacing--md) var(--spacing--xlg);
   border-radius: var(--border-radius--md);
   transition: opacity var(--transition-speed-medium);
 }
 
 .game-area__button {
   margin: var(--spacing--sm);
+  padding: var(--spacing--md) var(--spacing--xlg);
+}
+
+.header-item__button {
+  padding: var(--spacing--sm) var(--spacing--md);
 }
 
 .button--secondary {
   background-color: var(--button-background-color--secondary);
+  color: var(--font-color);
 }
 
 .button--primary {
   background-color: var(--button-background-color--primary);
+  color: var(--font-color);
 }
 
 .game-area__button:hover {
@@ -453,5 +458,11 @@
   }
   .button__icon {
     margin-right: 0.5rem;
+  }
+  .list__header-item,
+  .list__footer-item {
+    padding: 0 var(--spacing--lg);
+  }
+  .header-item__button {
   }
 }

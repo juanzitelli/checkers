@@ -17,7 +17,6 @@
 
 .main-content__data-submission {
   max-width: 30rem;
-  min-width: 30rem;
 }
 
 .form__control .control__label {
@@ -33,6 +32,7 @@
   margin: var(--input-spacing--sm) 0;
   border: var(--border-width) solid var(--border-color);
   padding: var(--input-inner-space);
+  width: 100%;
 }
 
 .form__control {

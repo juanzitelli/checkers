@@ -1,110 +1,42 @@
 "use strict";
 
-const KNOWN_CSS_CLASSES = {
-  board: "game-area__board",
-  checker: "checker",
-  redChecker: "checker--red",
-  row: "board__row",
-  scoreboard: "main-content__score-area",
-  startGameButton: "game-area__button",
-  tile: "row__tile",
-  whiteChecker: "checker--white",
+import {
+  KNOWN_CSS_CLASSES,
+  FIXTURE_TEXT,
+  KNOWN_HTML_TEMPLATE_IDS,
+  KNOWN_MOVEMENT_DIRECTIONS,
+  KNOWN_IDS,
+  GAME_CONFIG,
+} from "./utilities/fixtures.utilities.js";
 
-  playersScoreboards: {
-    both: {
-      scoreboard: "score-area__player",
-      status: "player__status",
-    },
-    p1: {
-      piecesRemaining: "pieces__remaining--p1",
-      name: "player-1__name",
-    },
-    p2: {
-      piecesRemaining: "pieces__remaining--p2",
-      name: "player-2__name",
-    },
-  },
-  gameStatus: {
-    gameStarted: "game-started",
-    playerTurnActive: "status--active",
-    selectedTile: "selected-tile",
-  },
-};
+import {
+  getContentFromHTMLTemplate,
+  generateTileId,
+} from "./utilities/dom.utilities.js";
 
-const KNOWN_EVENT_NAMES = {
-  onClick: "click",
-};
-
-const FIXTURE_TEXT = {
-  game: {
-    turns: {
-      activeTurn: "Active turn",
-      waiting: "Waiting",
-    },
-  },
-};
-
-const KNOWN_HTML_TEMPLATE_IDS = {
-  board: {
-    row: "row",
-    tile: "tile",
-    checkers: {
-      red: "red-piece",
-      white: "white-piece",
-    },
-  },
-};
-
-const KNOWN_MOVEMENT_DIRECTIONS = {
-  topDown: "topDown",
-  bottomUp: "bottomUp",
-};
-
-const KNOWN_TYPES = {
-  undefined: "undefined",
-};
-
-const GAME_CONFIG = {
-  board: {
-    dimension: 8,
-    checkersRows: 3,
-  },
-  players: {
-    p1: {
-      checkerIdentifier: 1,
-      kingIdentifier: 10,
-      checkerClass: KNOWN_CSS_CLASSES.whiteChecker,
-      id: "p1",
-      movementDirection: KNOWN_MOVEMENT_DIRECTIONS.topDown,
-    },
-    p2: {
-      kingIdentifier: 20,
-      checkerIdentifier: 2,
-      checkerClass: KNOWN_CSS_CLASSES.redChecker,
-      id: "p2",
-      movementDirection: KNOWN_MOVEMENT_DIRECTIONS.bottomUp,
-    },
-  },
-};
+import useHistoryModule from "./hooks/useHistoryModule.js";
+import useLocalStorageState from "./hooks/useLocalStorageState.js";
 
 const appState = {
   game: {
-    checkersStatus: {
+    status: {
       value: null,
       isSelectingMovement: false,
-      selectedTileWithCheckerId: null,
+      gameStatus: "awaitingStart",
     },
     turns: {
-      currentTurn: null,
+      current: null,
     },
     players: {
       p1: {
-        checkersLeft: 12,
+        checkersCounter: 12,
         name: "Player 1",
+        score: 0,
       },
       p2: {
-        checkersLeft: 12,
+        checkersCounter: 12,
         name: "Player 2",
+        score: 0,
       },
     },
   },
@@ -112,10 +44,11 @@ const appState = {
 
 let availableMovements = null;
 let clickedChecker = null;
+let movementType;
 
-const renderNewTurn = () => {
+const renderTurnSwap = () => {
   const isP1CurrentTurnOwner =
-    appState.game.turns.currentTurn === GAME_CONFIG.players.p1.id;
+    appState.game.turns.current === GAME_CONFIG.players.p1.id;
 
   const [scoreboard] = document.getElementsByClassName(
     KNOWN_CSS_CLASSES.scoreboard
@@ -159,116 +92,263 @@ const renderNewTurn = () => {
   p1Status.innerText = isP1CurrentTurnOwner ? waiting : activeTurn;
   p2Status.innerText = isP1CurrentTurnOwner ? activeTurn : waiting;
 
-  appState.game.turns.currentTurn = isP1CurrentTurnOwner
+  appState.game.turns.current = isP1CurrentTurnOwner
     ? GAME_CONFIG.players.p2.id
     : GAME_CONFIG.players.p1.id;
+
+  const isTie = isGameTied();
+
+  if (isTie) {
+    const { addGameToHistory } = useLocalStorageState();
+
+    const date = new Date();
+
+    const addGameToHistoryConfig = {
+      result: "Draw",
+      date: date.toDateString(),
+      dateValue: date,
+      players: {
+        p1: {
+          P1Name: appState.game.players.p1.name,
+          P1Score: appState.game.players.p1.score,
+        },
+        p2: {
+          P2Name: appState.game.players.p2.name,
+          P2Score: appState.game.players.p2.score,
+        },
+      },
+    };
+
+    addGameToHistory({ addGameToHistoryConfig });
+
+    const { renderHistoryGames } = useHistoryModule();
+
+    const { getGamesHistory } = useLocalStorageState();
+
+    const historyGames = getGamesHistory();
+
+    renderHistoryGames({ historyGames });
+    window.location.reload();
+  }
 };
 
-const getContentFromHTMLTemplate = ({ templateId, elementCssClass }) => {
-  const template = document.getElementById(templateId).content.cloneNode(true);
-  return document
-    .importNode(template, true)
-    .querySelector(`.${elementCssClass}`);
-};
+const getPieceAvailableMovements = ({ row, column }) => {
+  const cornerTiles = {
+    [KNOWN_MOVEMENT_DIRECTIONS.topDown]: [
+      { tileRow: row + 1, tileColumn: column + 1 },
+      { tileRow: row + 1, tileColumn: column - 1 },
+    ],
+    [KNOWN_MOVEMENT_DIRECTIONS.bottomUp]: [
+      { tileRow: row - 1, tileColumn: column + 1 },
+      { tileRow: row - 1, tileColumn: column - 1 },
+    ],
+  };
 
-const generateTileId = (rowIndex, cellIndex) =>
-  `row-${rowIndex}-tile-${cellIndex}`;
+  const currentPlayerCornerTiles =
+    cornerTiles[
+      GAME_CONFIG.players[appState.game.turns.current].movementDirection
+    ];
 
-const getAvailableMovements = (row, column) => {
-  const reducerFunction = (
-    accumulator,
-    currentRow,
-    currentRowIndex,
-    sourceArray
-  ) => {
-    accumulator.push(
-      currentRow.map((cell, currentCellIndex) => {
-        const currentPlayer = appState.game.turns.currentTurn;
-        if (
-          GAME_CONFIG.players[currentPlayer].movementDirection ===
-          KNOWN_MOVEMENT_DIRECTIONS.topDown
-        ) {
-          //TODO: FIX THIS FOR GOD'S SAKE 😰 (nice code, dude)
-          if (currentRowIndex === row + 1) {
-            if (
-              currentCellIndex === column + 1 ||
-              currentCellIndex === column - 1
-            ) {
-              if (
-                cell !== GAME_CONFIG.players.p1.checkerIdentifier &&
-                cell !== GAME_CONFIG.players.p2.checkerIdentifier
-              ) {
-                return [currentRowIndex, currentCellIndex];
-              } else {
-                if (cell === GAME_CONFIG.players.p2.checkerIdentifier) {
-                  if (
-                    sourceArray[currentRowIndex + 1] &&
-                    sourceArray[currentRowIndex + 1][
-                      currentCellIndex < column ? column - 2 : column + 2
-                    ] == null
-                  ) {
-                    return [
-                      currentRowIndex + 1,
-                      currentCellIndex < column ? column - 2 : column + 2,
-                      {
-                        eatenCell: {
-                          row: currentRowIndex,
-                          column: currentCellIndex,
-                          owner: cell,
-                        },
-                      },
-                    ];
-                  }
-                }
+  const adjacentRivalPieces = getAdjacentRivalPieces({
+    cornerTiles: currentPlayerCornerTiles,
+  });
+
+  const isP1 =
+    GAME_CONFIG.players[appState.game.turns.current].movementDirection ===
+    KNOWN_MOVEMENT_DIRECTIONS.topDown;
+
+  const availableTargetCells = adjacentRivalPieces
+    .map(({ tileRow, tileColumn }) => {
+      const leftColumn = tileColumn - 1;
+      const rightColumn = tileColumn + 1;
+
+      if (isP1) {
+        const bottomRow = tileRow + 1;
+
+        const targetRow = appState.game.status.value[bottomRow];
+
+        if (!targetRow) {
+          return null;
+        }
+
+        if (tileColumn > column) {
+          const targetCell = targetRow[rightColumn];
+
+          return targetCell === null
+            ? {
+                eatenPiece: { row: tileRow, column: tileColumn },
+                targetCell: { row: bottomRow, column: rightColumn },
               }
+            : null;
+        }
+
+        const targetCell = targetRow[leftColumn];
+
+        return targetCell === null
+          ? {
+              eatenPiece: { row: tileRow, column: tileColumn },
+              targetCell: { row: bottomRow, column: leftColumn },
             }
+          : null;
+      }
+
+      const upperRow = tileRow - 1;
+
+      const targetRow = appState.game.status.value[upperRow];
+
+      if (!targetRow) {
+        return null;
+      }
+
+      if (tileColumn > column) {
+        const targetCell = targetRow[rightColumn];
+
+        return targetCell === null
+          ? {
+              eatenPiece: { row: tileRow, column: tileColumn },
+              targetCell: { row: upperRow, column: rightColumn },
+            }
+          : null;
+      }
+
+      const targetCell = targetRow[leftColumn];
+
+      return targetCell === null
+        ? {
+            eatenPiece: { row: tileRow, column: tileColumn },
+            targetCell: { row: upperRow, column: leftColumn },
           }
-        } else {
-          if (currentRowIndex === row - 1) {
-            if (
-              currentCellIndex === column + 1 ||
-              currentCellIndex === column - 1
-            ) {
-              if (
-                cell !== GAME_CONFIG.players.p1.checkerIdentifier &&
-                cell !== GAME_CONFIG.players.p2.checkerIdentifier
-              ) {
-                return [currentRowIndex, currentCellIndex];
-              } else {
-                if (cell === GAME_CONFIG.players.p1.checkerIdentifier) {
-                  if (
-                    sourceArray[currentRowIndex - 1] &&
-                    sourceArray[currentRowIndex - 1][
-                      currentCellIndex < column ? column - 2 : column + 2
-                    ] === null
-                  ) {
-                    return [
-                      currentRowIndex - 1,
-                      currentCellIndex < column ? column - 2 : column + 2,
-                      {
-                        eatenCell: {
-                          row: currentRowIndex,
-                          column: currentCellIndex,
-                          owner: cell,
-                        },
-                      },
-                    ];
-                  }
-                }
-              }
+        : null;
+    })
+    .filter((item) => item !== null);
+
+  const adjacentEmptyTiles = currentPlayerCornerTiles.filter(
+    ({ tileRow, tileColumn }) => {
+      const targetRow = appState.game.status.value[tileRow];
+
+      if (!targetRow) {
+        return false;
+      }
+
+      const targetCell = targetRow[tileColumn];
+
+      return targetCell === null;
+    }
+  );
+
+  const movement = {
+    type: "movement",
+    movements: adjacentEmptyTiles,
+  };
+
+  const capture = {
+    type: "capture",
+    movements: availableTargetCells,
+  };
+
+  return capture.movements.length > 0 ? capture : movement;
+};
+
+const getKingAvailableMovements = ({ row: kingRow, column: kingColumn }) => {
+  const kingMovements = [];
+  const kingCapturingMovements = [];
+
+  const board = appState.game.status.value;
+
+  const getDiagonalKingMovements = (
+    { row, column },
+    rowDirection,
+    columnDirection
+  ) => {
+    const targetedRow = board[row];
+    if (targetedRow) {
+      const targetedColumn = targetedRow[column];
+      if (targetedColumn === null) {
+        kingMovements.push({
+          tileRow: row,
+          tileColumn: column,
+        });
+
+        getDiagonalKingMovements(
+          { row: row + rowDirection, column: column + columnDirection },
+          rowDirection,
+          columnDirection
+        );
+      }
+    }
+
+    if (board[row]) {
+      if (board[row][column]) {
+        if (
+          (board[row][column] === board[row][column]) !== null &&
+          board[row][column] !==
+            GAME_CONFIG.players[appState.game.turns.current]
+              .checkerIdentifier &&
+          board[row][column] !==
+            GAME_CONFIG.players[appState.game.turns.current].kingIdentifier
+        ) {
+          const nextRow = board[row + rowDirection];
+          if (nextRow) {
+            const nextColumn = nextRow[column + columnDirection];
+            if (nextColumn === null) {
+              kingCapturingMovements.push({
+                targetCell: {
+                  row: row + rowDirection,
+                  column: column + columnDirection,
+                },
+                eatenPiece: { row, column },
+              });
             }
           }
         }
-      })
-    );
-    return accumulator
-      .map((item) =>
-        item.filter((item) => typeof item !== KNOWN_TYPES.undefined)
-      )
-      .filter((item) => item.length > 0);
+      }
+    }
+
+    return;
   };
-  return appState.game.checkersStatus.value.reduce(reducerFunction, []);
+
+  getDiagonalKingMovements({ row: kingRow + 1, column: kingColumn + 1 }, 1, 1);
+  getDiagonalKingMovements({ row: kingRow + 1, column: kingColumn - 1 }, 1, -1);
+  getDiagonalKingMovements(
+    { row: kingRow - 1, column: kingColumn - 1 },
+    -1,
+    -1
+  );
+  getDiagonalKingMovements({ row: kingRow - 1, column: kingColumn + 1 }, -1, 1);
+
+  const capture = {
+    type: "capture",
+    movements: kingCapturingMovements,
+  };
+  const movement = {
+    type: "movement",
+    movements: kingMovements,
+  };
+
+  return capture.movements.length > 0 ? capture : movement;
 };
+
+const getAvailableMovements = (tileRow, tileColumn) => {
+  const isKing =
+    appState.game.status.value[tileRow][tileColumn] ===
+    GAME_CONFIG.players[appState.game.turns.current].kingIdentifier;
+
+  const availableMovementsConfig = { row: tileRow, column: tileColumn };
+
+  return isKing
+    ? getKingAvailableMovements(availableMovementsConfig)
+    : getPieceAvailableMovements(availableMovementsConfig);
+};
+
+const hasOwnPiece = ({ tile }) =>
+  (appState.game.turns.current != null &&
+    !!tile.querySelector(
+      `.${GAME_CONFIG.players[appState.game.turns.current].checkerClass}`
+    )) ||
+  (appState.game.turns.current != null &&
+    !!tile.querySelector(
+      `.${GAME_CONFIG.players[appState.game.turns.current].kingClass}`
+    ));
 
 const onClickTileHandler = ({
   element: tile,
@@ -277,95 +357,265 @@ const onClickTileHandler = ({
     cellIndex: clickedTileColumnIndex,
   },
 }) => {
-  const hasOwnChecker =
-    appState.game.turns.currentTurn != null &&
-    !!tile.querySelector(
-      `.${GAME_CONFIG.players[appState.game.turns.currentTurn].checkerClass}`
-    );
+  resetAvailableMovementsHighlighting();
 
-  const highlightedTiles = Array.from(
-    document.getElementsByClassName(KNOWN_CSS_CLASSES.gameStatus.selectedTile)
-  );
+  const clickedOnOwnPiece = hasOwnPiece({ tile });
 
-  for (const tile of highlightedTiles) {
-    tile.classList.remove(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
-  }
-
-  if (hasOwnChecker) {
-    availableMovements = getAvailableMovements(
-      clickedTileRowIndex,
-      clickedTileColumnIndex
-    );
-
-    appState.game.checkersStatus.selectedTileWithCheckerId = generateTileId(
-      clickedTileRowIndex,
-      clickedTileColumnIndex
-    );
+  if (clickedOnOwnPiece) {
     tile.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
     clickedChecker = [clickedTileRowIndex, clickedTileColumnIndex];
 
-    renderAvailableMovements(clickedTileRowIndex, clickedTileColumnIndex);
-    appState.game.checkersStatus.isSelectingMovement = true;
+    const { movements, type } = getAvailableMovements(
+      clickedTileRowIndex,
+      clickedTileColumnIndex
+    );
+
+    movementType = type;
+    availableMovements = movements;
+
+    const peerCapturingMovements = getPeersCapturingMovements(
+      clickedTileRowIndex,
+      clickedTileColumnIndex
+    );
+
+    if (type === "movement" && peerCapturingMovements.length > 0) {
+      availableMovements = [];
+    }
+
+    renderAvailableMovements({
+      availableMovements,
+    });
+
+    appState.game.status.isSelectingMovement = true;
   }
 
-  if (appState.game.checkersStatus.isSelectingMovement) {
-    for (const availableMovement of availableMovements) {
-      for (const tile of availableMovement) {
-        const [availableMovementRow, availableMovementColumn] = tile;
-        const clickedTileIsAvailableMovement =
-          availableMovementRow === clickedTileRowIndex &&
-          availableMovementColumn === clickedTileColumnIndex;
-        if (clickedTileIsAvailableMovement) {
+  if (!clickedOnOwnPiece && appState.game.status.isSelectingMovement) {
+    const [boardElement] = document.getElementsByClassName(
+      KNOWN_CSS_CLASSES.board
+    );
+
+    switch (movementType) {
+      case "movement": {
+        for (const {
+          tileRow: availableMovementRow,
+          tileColumn: availableMovementColumn,
+        } of availableMovements) {
+          const isAvailableMovement =
+            availableMovementRow === clickedTileRowIndex &&
+            availableMovementColumn === clickedTileColumnIndex;
+
+          if (isAvailableMovement) {
+            const [clickedCheckerRowIndex, clickedCheckerColumnIndex] =
+              clickedChecker;
+
+            const currentTurnPlayer = appState.game.turns.current;
+
+            const piece = getNewPieceValue({
+              currentTurnPlayer,
+              clickedChecker: {
+                clickedCheckerRowIndex,
+                clickedCheckerColumnIndex,
+              },
+              destinationTile: {
+                clickedTileRowIndex,
+                clickedTileColumnIndex,
+              },
+            });
+
+            executeMovement({
+              targetTile: {
+                clickedTileRowIndex,
+                clickedTileColumnIndex,
+                piece,
+              },
+              clickedChecker: {
+                clickedCheckerRowIndex,
+                clickedCheckerColumnIndex,
+              },
+            });
+
+            renderRows({
+              boardElement,
+              boardMatrix: appState.game.status.value,
+            });
+            appState.game.status.isSelectingMovement = false;
+            renderTurnSwap();
+          }
+        }
+        break;
+      }
+      case "capture": {
+        for (const {
+          eatenPiece: { row: eatenPieceRow, column: eatenPieceColumn },
+          targetCell: {
+            row: availableMovementRow,
+            column: availableMovementColumn,
+          },
+        } of availableMovements) {
+          const currentTurnPlayer = appState.game.turns.current;
+
           const [clickedCheckerRowIndex, clickedCheckerColumnIndex] =
             clickedChecker;
-          appState.game.checkersStatus.value[clickedCheckerRowIndex][
-            clickedCheckerColumnIndex
-          ] = null;
 
-          appState.game.checkersStatus.value[availableMovementRow][
-            availableMovementColumn
-          ] =
-            GAME_CONFIG.players[
-              appState.game.turns.currentTurn
-            ].checkerIdentifier;
+          const getNewPieceValueConfig = {
+            currentTurnPlayer,
+            clickedChecker: {
+              clickedCheckerRowIndex,
+              clickedCheckerColumnIndex,
+            },
+            destinationTile: { clickedTileRowIndex, clickedTileColumnIndex },
+          };
 
-          const [, , eatenPieces] = tile;
-          if (eatenPieces) {
-            const {
-              eatenCell: { row, column, owner },
-            } = eatenPieces;
+          const piece = getNewPieceValue(getNewPieceValueConfig);
 
-            const ownerId =
-              owner === GAME_CONFIG.players.p1.checkerIdentifier
-                ? GAME_CONFIG.players.p1.id
-                : GAME_CONFIG.players.p2.id;
+          const isAvailableMovement =
+            availableMovementRow === clickedTileRowIndex &&
+            availableMovementColumn === clickedTileColumnIndex;
 
-            appState.game.players[ownerId].checkersLeft--;
+          if (isAvailableMovement) {
+            executeCapture({
+              availableMovement: {
+                availableMovementRow,
+                availableMovementColumn,
+              },
+              piece,
+              clickedChecker: {
+                clickedCheckerRowIndex,
+                clickedCheckerColumnIndex,
+              },
+              eatenPiece: {
+                eatenPieceRow,
+                eatenPieceColumn,
+              },
+            });
 
-            const [piecesRemaining] = document.getElementsByClassName(
-              KNOWN_CSS_CLASSES.playersScoreboards[ownerId].piecesRemaining
+            const currentOpponentPlayer =
+              currentTurnPlayer === GAME_CONFIG.players.p1.id
+                ? GAME_CONFIG.players.p2.id
+                : GAME_CONFIG.players.p1.id;
+
+            increaseScore({ currentOpponentPlayer });
+
+            renderRows({
+              boardElement,
+              boardMatrix: appState.game.status.value,
+            });
+            appState.game.status.isSelectingMovement = false;
+
+            const hasCurrentPlayerWon = isCurrentPlayerVictorious(
+              currentOpponentPlayer
             );
 
-            piecesRemaining.innerHTML =
-              appState.game.players[ownerId].checkersLeft;
+            if (hasCurrentPlayerWon) {
+              const { addGameToHistory } = useLocalStorageState();
 
-            appState.game.checkersStatus.value[row][column] = null;
+              const date = new Date();
+
+              const addGameToHistoryConfig = {
+                result: `Victory`,
+                date: date.toDateString(),
+                dateValue: date,
+                players: {
+                  p1: {
+                    P1Name: appState.game.players.p1.name,
+                    P1Score: appState.game.players.p1.score,
+                  },
+                  p2: {
+                    P2Name: appState.game.players.p2.name,
+                    P2Score: appState.game.players.p2.score,
+                  },
+                },
+              };
+
+              addGameToHistory({ addGameToHistoryConfig });
+
+              const { renderHistoryGames } = useHistoryModule();
+
+              const { getGamesHistory } = useLocalStorageState();
+
+              const historyGames = getGamesHistory();
+
+              renderHistoryGames({ historyGames });
+              window.location.reload();
+            }
           }
-
-          const [boardElement] = document.getElementsByClassName(
-            KNOWN_CSS_CLASSES.board
-          );
-
-          renderRows(boardElement, appState.game.checkersStatus.value);
-          appState.game.checkersStatus.isSelectingMovement = false;
-          renderNewTurn();
         }
+        break;
       }
+      default:
+        break;
     }
   }
 };
 
-const renderRows = (boardElement, initialBoardMatrix) => {
+const isGameTied = () => {
+  const [P1Piece] = appState.game.status.value
+    .map((boardRow, boardRowIndex) => {
+      return boardRow
+        .map((boardColumn, boardColumnIndex) =>
+          boardColumn === GAME_CONFIG.players.p1.checkerIdentifier ||
+          boardColumn === GAME_CONFIG.players.p1.kingIdentifier
+            ? {
+                row: boardRowIndex,
+                column: boardColumnIndex,
+                value: boardColumn,
+              }
+            : null
+        )
+        .filter((item) => item !== null);
+    })
+    .flat();
+
+  const [P2Piece] = appState.game.status.value
+    .map((boardRow, boardRowIndex) => {
+      return boardRow
+        .map((boardColumn, boardColumnIndex) =>
+          boardColumn === GAME_CONFIG.players.p2.checkerIdentifier ||
+          boardColumn === GAME_CONFIG.players.p2.kingIdentifier
+            ? {
+                row: boardRowIndex,
+                column: boardColumnIndex,
+                value: boardColumn,
+              }
+            : null
+        )
+        .filter((item) => item !== null);
+    })
+    .flat();
+
+  const player1AvailableMovements = getPeersCapturingMovements(
+    P1Piece.row,
+    P1Piece.column,
+    true,
+    true
+  ).filter((item) => item.movements.length > 0);
+
+  const player2AvailableMovements = getPeersCapturingMovements(
+    P2Piece.row,
+    P2Piece.column,
+    true,
+    true
+  ).filter((item) => item.movements.length > 0);
+
+  const playersHaveAvailableMovements =
+    player1AvailableMovements.length > 0 &&
+    player2AvailableMovements.length > 0;
+
+  if (playersHaveAvailableMovements) {
+    return;
+  }
+
+  if (
+    confirm(
+      `Seems like you two are very good at this! The game reached a draw! 🤷‍♂️ fancy another one?`
+    )
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const renderRows = ({ boardElement, boardMatrix }) => {
   while (boardElement.firstChild) {
     boardElement.removeChild(boardElement.lastChild);
   }
@@ -397,12 +647,26 @@ const renderRows = (boardElement, initialBoardMatrix) => {
 
   const redCheckerElement = getContentFromHTMLTemplate(redCheckerParams);
 
-  initialBoardMatrix.forEach((row, rowIndex) => {
+  const whiteKingParams = {
+    templateId: KNOWN_HTML_TEMPLATE_IDS.board.kings.white,
+    elementCssClass: KNOWN_CSS_CLASSES.whiteKing,
+  };
+
+  const whiteKingElement = getContentFromHTMLTemplate(whiteKingParams);
+
+  const redKingParams = {
+    templateId: KNOWN_HTML_TEMPLATE_IDS.board.kings.red,
+    elementCssClass: KNOWN_CSS_CLASSES.redKing,
+  };
+
+  const redKingElement = getContentFromHTMLTemplate(redKingParams);
+
+  boardMatrix.forEach((row, rowIndex) => {
     const clonedRow = rowElement.cloneNode(true);
     row.forEach((cell, cellIndex) => {
       const clonedTile = tileElement.cloneNode(true);
       clonedTile.id = generateTileId(rowIndex, cellIndex);
-      clonedTile.addEventListener(KNOWN_EVENT_NAMES.onClick, () => {
+      clonedTile.onclick = () => {
         onClickTileHandler({
           element: clonedTile,
           position: {
@@ -410,7 +674,7 @@ const renderRows = (boardElement, initialBoardMatrix) => {
             cellIndex,
           },
         });
-      });
+      };
       switch (cell) {
         case 1:
           const clonedWhiteChecker = whiteCheckerElement.cloneNode(true);
@@ -420,6 +684,16 @@ const renderRows = (boardElement, initialBoardMatrix) => {
         case 2:
           const clonedRedChecker = redCheckerElement.cloneNode(true);
           clonedTile.appendChild(clonedRedChecker);
+          clonedRow.appendChild(clonedTile);
+          break;
+        case 10:
+          const clonedWhiteKing = whiteKingElement.cloneNode(true);
+          clonedTile.appendChild(clonedWhiteKing);
+          clonedRow.appendChild(clonedTile);
+          break;
+        case 20:
+          const clonedRedKing = redKingElement.cloneNode(true);
+          clonedTile.appendChild(clonedRedKing);
           clonedRow.appendChild(clonedTile);
           break;
         default:
@@ -473,79 +747,547 @@ const getInitialBoardMatrix = ({ dimension, checkersRows, players }) => {
         .fill(null)
         .map((_, cellId) => getCheckerIdentifier(rowId, cellId) ?? null)
     );
+
+  //! I left this fixed array on purpose to test drawed games due to the difficulty that a game actually ends with a draw
+
+  const testBoard = [
+    [null, null, null, null, null, null, 1, null],
+    [null, 1, null, 1, null, null, null, 1],
+    [1, null, 1, null, 1, null, 1, null],
+    [null, 1, null, 1, null, 2, null, 1],
+    [2, null, 1, null, 2, null, 2, null],
+    [null, 2, null, 2, null, 2, null, 2],
+    [2, null, 2, null, 2, null, 2, null],
+    [null, null, null, null, null, null, null, null],
+  ];
+
+  return testBoard;
 };
 
-const hideButtonShowScores = () => {
-  const [gameScoreboard] = document.getElementsByClassName(
-    KNOWN_CSS_CLASSES.scoreboard
+const renderScoreboard = () => {
+  const gameScoreboard = document.querySelector(
+    `.${KNOWN_CSS_CLASSES.scoreboard}`
   );
   gameScoreboard.classList.add(KNOWN_CSS_CLASSES.gameStatus.gameStarted);
-  startGameButton.classList.add(KNOWN_CSS_CLASSES.gameStatus.gameStarted);
 };
 
-const [startGameButton] = document.getElementsByClassName(
-  KNOWN_CSS_CLASSES.startGameButton
-);
+const bootstrapApp = () => {
+  appState.game.status.gameStatus = "awaitingStart";
+  const startGameButton = document.getElementById(KNOWN_IDS.buttons.startGame);
+  const loadGameButton = document.getElementById(KNOWN_IDS.buttons.loadGame);
+  const saveGameButton = document.getElementById(KNOWN_IDS.buttons.saveGame);
 
-const bootstrapApp = ({ players, board: { dimension, checkersRows } }) => {
+  const filterByDateInput = document.getElementById(
+    KNOWN_IDS.inputs.dateFilter
+  );
+  const filterByScoreInput = document.getElementById(
+    KNOWN_IDS.inputs.scoreFilter
+  );
+
+  filterByDateInput.onchange = onChangeFilterHandler;
+  filterByScoreInput.onchange = onChangeFilterHandler;
+
+  startGameButton.focus();
+  startGameButton.onclick = onStartGameButtonClickHandler;
+  loadGameButton.onclick = onLoadGameButtonClickHandler;
+  saveGameButton.onclick = onSaveGameButtonClickHandler;
+
+  const modal = document.getElementById(KNOWN_IDS.historyModule.modal);
+
+  const modalTriggerButtonElement = document.getElementById(
+    KNOWN_IDS.historyModule.modalTrigger
+  );
+
+  const closeModalButtonElement = document.getElementsByClassName("close")[0];
+
+  modalTriggerButtonElement.onclick = () => {
+    modal.style.display = "block";
+  };
+
+  closeModalButtonElement.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  window.onclick = onModalCloseClickHandler;
+
   const [boardElement] = document.getElementsByClassName(
     KNOWN_CSS_CLASSES.board
   );
 
   const matrixGenerationParams = {
-    dimension,
-    checkersRows,
-    players,
+    dimension: GAME_CONFIG.board.dimension,
+    checkersRows: GAME_CONFIG.board.checkersRows,
+    players: GAME_CONFIG.players,
   };
 
   const initialBoardMatrix = getInitialBoardMatrix(matrixGenerationParams);
 
-  appState.game.checkersStatus.value = initialBoardMatrix;
+  renderRows({ boardElement, boardMatrix: initialBoardMatrix });
 
-  renderRows(boardElement, initialBoardMatrix);
+  const { renderHistoryGames } = useHistoryModule();
 
-  startGameButton.addEventListener(KNOWN_EVENT_NAMES.onClick, startGame);
+  const { getGamesHistory } = useLocalStorageState();
+
+  const historyGames = getGamesHistory();
+
+  renderHistoryGames({ historyGames });
 };
 
-const startGame = () => {
-  hideButtonShowScores();
-  getAndAssignPlayersNames();
-  appState.game.turns.currentTurn = GAME_CONFIG.players.p1.id;
+const onLoadGameButtonClickHandler = () => {
+  const {
+    value,
+    players: {
+      p1: { score: P1Score, name: P1Name, checkersCounter: P1CheckersCounter },
+      p2: { score: P2Score, name: P2Name, checkersCounter: P2CheckersCounter },
+    },
+    currentTurn,
+  } = JSON.parse(localStorage.getItem("JAZ_savedGame"));
+
+  appState.game.status.value = value;
+  appState.game.players.p1.score = P1Score;
+  appState.game.players.p1.name = P1Name;
+  appState.game.players.p1.checkersCounter = P1CheckersCounter;
+  appState.game.players.p2.score = P2Score;
+  appState.game.players.p2.name = P2Name;
+  appState.game.players.p2.checkersCounter = P2CheckersCounter;
+  appState.game.turns.current = currentTurn;
+
+  const [boardElement] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.board
+  );
+
+  renderRows({ boardElement, boardMatrix: appState.game.status.value });
+  renderTurn({ isGameLoaded: true });
+
+  const playerIds = [
+    { playerId: GAME_CONFIG.players.p1.id },
+    { playerId: GAME_CONFIG.players.p2.id },
+  ];
+
+  playerIds.forEach(renderPlayerName);
+
+  alert("Game loaded successfully! 🤩");
 };
 
-function getAndAssignPlayersNames() {
-  appState.game.players.p1.name = prompt(
-    "Hey! Player 1! What's your name?",
-    "John Doe"
+const onSaveGameButtonClickHandler = () => {
+  const { setSavedGame } = useLocalStorageState();
+
+  const saveGameConfig = {
+    value: appState.game.status.value,
+    players: {
+      p1: {
+        score: appState.game.players.p1.score,
+        name: appState.game.players.p1.name,
+        checkersCounter: appState.game.players.p1.checkersCounter,
+      },
+      p2: {
+        score: appState.game.players.p2.score,
+        name: appState.game.players.p2.name,
+        checkersCounter: appState.game.players.p2.checkersCounter,
+      },
+    },
+    currentTurn: appState.game.turns.current,
+  };
+
+  setSavedGame({ saveGameConfig });
+  alert("Game saved successfully! 💾");
+};
+
+const onStartGameButtonClickHandler = () => {
+  const loadGameButton = document.getElementById(KNOWN_IDS.buttons.loadGame);
+  loadGameButton.disabled = false;
+
+  const saveGameButton = document.getElementById(KNOWN_IDS.buttons.saveGame);
+  saveGameButton.disabled = false;
+
+  const matrixGenerationParams = {
+    dimension: GAME_CONFIG.board.dimension,
+    checkersRows: GAME_CONFIG.board.checkersRows,
+    players: GAME_CONFIG.players,
+  };
+
+  const initialBoardMatrix = getInitialBoardMatrix(matrixGenerationParams);
+
+  appState.game.status.value = initialBoardMatrix;
+
+  const [boardElement] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.board
   );
-  appState.game.players.p2.name = prompt(
-    "How about you, Player 2?",
-    "Jane Doe"
+
+  renderRows({ boardElement, boardMatrix: initialBoardMatrix });
+
+  renderScoreboard();
+
+  const players = [
+    { namePlaceholder: "Player 1", playerId: "p1", defaultName: "Rick 🧪" },
+    { namePlaceholder: "Player 2", playerId: "p2", defaultName: "Morty 👦" },
+  ];
+
+  players.forEach(getAndAssignPlayerName);
+
+  appState.game.status.gameStatus = "started";
+
+  appState.game.turns.current = GAME_CONFIG.players.p1.id;
+
+  appState.game.players.p1.checkersCounter = 12;
+  appState.game.players.p2.checkersCounter = 12;
+  appState.game.players.p1.score = 0;
+  appState.game.players.p2.score = 0;
+
+  renderTurn({ isGameLoaded: false });
+};
+
+const resetAvailableMovementsHighlighting = () => {
+  const highlightedTiles = Array.from(
+    document.getElementsByClassName(KNOWN_CSS_CLASSES.gameStatus.selectedTile)
   );
-  const [p1Title] = document.getElementsByClassName(
-    KNOWN_CSS_CLASSES.playersScoreboards.p1.name
-  );
 
-  p1Title.innerText = appState.game.players.p1.name;
+  for (const tile of highlightedTiles) {
+    tile.classList.remove(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+  }
+};
 
-  const [p2Title] = document.getElementsByClassName(
-    KNOWN_CSS_CLASSES.playersScoreboards.p2.name
-  );
+const getAndAssignPlayerName = ({ namePlaceholder, playerId, defaultName }) => {
+  let playerName = null;
+  let result;
+  do {
+    result = prompt(`Hey! ${namePlaceholder}! What's your name?`, defaultName);
 
-  p2Title.innerText = appState.game.players.p2.name;
-}
+    if (result) {
+      playerName = result.trim();
+    }
+  } while (!result);
 
-function renderAvailableMovements(rowIndex, cellIndex) {
-  const availableMovements = getAvailableMovements(rowIndex, cellIndex);
+  appState.game.players[playerId].name =
+    playerName.trim().length === 0 ? defaultName : playerName;
 
-  for (const item of availableMovements) {
-    for (const emptyTile of item) {
-      const [row, col] = emptyTile;
-      const tileID = generateTileId(row, col);
-      const tile = document.getElementById(tileID);
-      tile?.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+  renderPlayerName({ playerId });
+};
+
+const renderAvailableMovements = ({ availableMovements }) => {
+  if (availableMovements) {
+    for (const movement of availableMovements) {
+      if (movement.eatenPiece) {
+        const {
+          targetCell: { row, column },
+        } = movement;
+
+        const tileID = generateTileId(row, column);
+        const tile = document.getElementById(tileID);
+        tile?.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+      } else {
+        if (movement.tileRow) {
+          const { tileRow, tileColumn } = movement;
+          const tileID = generateTileId(tileRow, tileColumn);
+          const tile = document.getElementById(tileID);
+          tile?.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+        } else {
+          const { row, column } = movement;
+          const tileID = generateTileId(row, column);
+          const tile = document.getElementById(tileID);
+          tile?.classList.add(KNOWN_CSS_CLASSES.gameStatus.selectedTile);
+        }
+      }
     }
   }
-}
+};
+
+const getNewPieceValue = ({
+  currentTurnPlayer,
+  clickedChecker: { clickedCheckerRowIndex, clickedCheckerColumnIndex },
+  destinationTile: { clickedTileRowIndex },
+}) => {
+  const boardStatus = appState.game.status.value;
+
+  const clickedCheckerCurrentValue =
+    boardStatus[clickedCheckerRowIndex][clickedCheckerColumnIndex];
+
+  const currentPlayerKingIdentifier =
+    GAME_CONFIG.players[currentTurnPlayer].kingIdentifier;
+
+  const isKingRow =
+    clickedTileRowIndex === GAME_CONFIG.players[currentTurnPlayer].kingRow;
+
+  const pieceWasAlreadyKing =
+    boardStatus[clickedCheckerRowIndex][clickedCheckerColumnIndex] ===
+    GAME_CONFIG.players[currentTurnPlayer].kingIdentifier;
+
+  return isKingRow
+    ? pieceWasAlreadyKing
+      ? clickedCheckerCurrentValue
+      : currentPlayerKingIdentifier
+    : clickedCheckerCurrentValue;
+};
+
+const executeCapture = ({
+  availableMovement: { availableMovementRow, availableMovementColumn },
+  piece,
+  clickedChecker: { clickedCheckerRowIndex, clickedCheckerColumnIndex },
+  eatenPiece: { eatenPieceRow, eatenPieceColumn },
+}) => {
+  appState.game.status.value[availableMovementRow][availableMovementColumn] =
+    piece;
+
+  appState.game.status.value[clickedCheckerRowIndex][
+    clickedCheckerColumnIndex
+  ] = null;
+
+  appState.game.status.value[eatenPieceRow][eatenPieceColumn] = null;
+};
+
+const executeMovement = ({
+  targetTile: { clickedTileRowIndex, clickedTileColumnIndex, piece },
+  clickedChecker: { clickedCheckerRowIndex, clickedCheckerColumnIndex },
+}) => {
+  appState.game.status.value[clickedTileRowIndex][clickedTileColumnIndex] =
+    piece;
+
+  appState.game.status.value[clickedCheckerRowIndex][
+    clickedCheckerColumnIndex
+  ] = null;
+};
+
+const containsRivalPiece = ({ tileValue }) => {
+  return (
+    tileValue !== null &&
+    tileValue !==
+      GAME_CONFIG.players[appState.game.turns.current].checkerIdentifier &&
+    tileValue !==
+      GAME_CONFIG.players[appState.game.turns.current].kingIdentifier
+  );
+};
+
+const getAdjacentRivalPieces = ({ cornerTiles }) => {
+  return cornerTiles.filter(({ tileRow, tileColumn }) => {
+    const row = appState.game.status.value[tileRow];
+    if (!row) {
+      return false;
+    }
+    const tile = row[tileColumn];
+
+    return containsRivalPiece({ tileValue: tile });
+  });
+};
+
+const increaseScore = ({ currentOpponentPlayer }) => {
+  appState.game.players[currentOpponentPlayer].checkersCounter--;
+
+  const [score] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards[appState.game.turns.current].score
+  );
+
+  appState.game.players[appState.game.turns.current].score += 5;
+
+  score.innerHTML = appState.game.players[appState.game.turns.current].score;
+};
+
+const isCurrentPlayerVictorious = (currentOpponentPlayer) => {
+  if (appState.game.players[currentOpponentPlayer].checkersCounter === 0) {
+    if (
+      confirm(
+        `Hooray! 🥳, ${
+          appState.game.players[appState.game.turns.current].name
+        } won the game! Fancy another one?`
+      )
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+};
+
+const getPeersCapturingMovements = (
+  row,
+  column,
+  includeOwnPiece = false,
+  includeRegularMovements = false
+) => {
+  const clickedPieceValue = appState.game.status.value[row][column];
+
+  if (clickedPieceValue === null) {
+    return [];
+  }
+
+  const isPeerValue = (value) =>
+    value === GAME_CONFIG.players[appState.game.turns.current].kingIdentifier ||
+    value ===
+      GAME_CONFIG.players[appState.game.turns.current].checkerIdentifier;
+
+  const peers = appState.game.status.value
+    .map((boardRow, boardRowIndex) => {
+      const boardItems = boardRow
+        .map((_, boardColumnIndex) => {
+          const currentValue =
+            appState.game.status.value[boardRowIndex][boardColumnIndex];
+
+          const isSamePiece =
+            boardRowIndex === row ? boardColumnIndex === column : false;
+
+          const isPeer = isPeerValue(currentValue);
+
+          if (includeOwnPiece) {
+            return isPeer
+              ? {
+                  peerRow: boardRowIndex,
+                  peerColumn: boardColumnIndex,
+                  peerValue: currentValue,
+                }
+              : null;
+          }
+
+          return isPeer && !isSamePiece
+            ? {
+                peerRow: boardRowIndex,
+                peerColumn: boardColumnIndex,
+                peerValue: currentValue,
+              }
+            : null;
+        })
+        .filter((item) => item !== null);
+
+      return boardItems;
+    })
+    .filter((item) => item.length > 0)
+    .flat();
+
+  const peerMovements = peers.map((peer) => {
+    return peer.peerValue === GAME_CONFIG.players.p1.checkerIdentifier ||
+      peer.peerValue === GAME_CONFIG.players.p2.checkerIdentifier
+      ? getPieceAvailableMovements({
+          row: peer.peerRow,
+          column: peer.peerColumn,
+        })
+      : getKingAvailableMovements({
+          row: peer.peerRow,
+          column: peer.peerColumn,
+        });
+  });
+
+  return includeRegularMovements
+    ? peerMovements
+    : peerMovements.filter((peerMovement) => peerMovement.type === "capture");
+};
+
+const renderTurn = ({ isGameLoaded = false }) => {
+  const [scoreboard] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.scoreboard
+  );
+
+  const [player1Scoreboard, player2Scoreboard] =
+    scoreboard.getElementsByClassName(
+      KNOWN_CSS_CLASSES.playersScoreboards.both.scoreboard
+    );
+
+  const [P1Score] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.p1.score
+  );
+
+  P1Score.innerHTML = appState.game.players.p1.score;
+
+  const [P2Score] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.p2.score
+  );
+
+  P2Score.innerHTML = appState.game.players.p2.score;
+
+  const [p1Status] = player1Scoreboard.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.both.status
+  );
+
+  const [p2Status] = player2Scoreboard.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards.both.status
+  );
+
+  const {
+    game: {
+      turns: { waiting, activeTurn },
+    },
+  } = FIXTURE_TEXT;
+
+  const isP1CurrentTurnOwner =
+    appState.game.turns.current === GAME_CONFIG.players.p1.id;
+
+  p1Status.innerText = activeTurn;
+  p2Status.innerText = waiting;
+
+  player1Scoreboard.classList.add(
+    KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+  );
+  player2Scoreboard.classList.remove(
+    KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+  );
+
+  if (isGameLoaded) {
+    if (isP1CurrentTurnOwner) {
+      player1Scoreboard.classList.add(
+        KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+      );
+      player2Scoreboard.classList.remove(
+        KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+      );
+
+      return;
+    }
+
+    player1Scoreboard.classList.remove(
+      KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+    );
+    player2Scoreboard.classList.add(
+      KNOWN_CSS_CLASSES.gameStatus.playerTurnActive
+    );
+
+    p1Status.innerText = isP1CurrentTurnOwner ? activeTurn : waiting;
+    p2Status.innerText = isP1CurrentTurnOwner ? waiting : activeTurn;
+
+    return;
+  }
+};
+
+const renderPlayerName = ({ playerId }) => {
+  const [playerNameElement] = document.getElementsByClassName(
+    KNOWN_CSS_CLASSES.playersScoreboards[playerId].name
+  );
+
+  playerNameElement.innerText = appState.game.players[playerId].name;
+};
+
+const onModalCloseClickHandler = (event) => {
+  const modal = document.getElementById(KNOWN_IDS.historyModule.modal);
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+const onChangeFilterHandler = ({ target: { value: filterType } }) => {
+  const { getGamesHistory } = useLocalStorageState();
+
+  const {
+    renderHistoryGames,
+    sortByDate,
+    sortByScore,
+    renderResetHistoryGames,
+  } = useHistoryModule();
+
+  const historyGames = getGamesHistory();
+
+  renderResetHistoryGames();
+
+  if (filterType === "date") {
+    const sortedGamesHistory = sortByDate({ historyGames });
+
+    renderHistoryGames({
+      historyGames: sortedGamesHistory,
+    });
+
+    return;
+  }
+
+  const sortedGamesHistory = sortByScore({ historyGames });
+
+  renderHistoryGames({
+    historyGames: sortedGamesHistory,
+  });
+};
 
 window.onload = bootstrapApp(GAME_CONFIG);
